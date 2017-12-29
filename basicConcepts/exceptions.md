@@ -1,29 +1,15 @@
-.. _topics-exceptions:
-
-==========
-Exceptions
-==========
-
-.. module:: scrapy.exceptions
-   :synopsis: Scrapy exceptions
-
-.. _topics-exceptions-ref:
-
-Built-in Exceptions reference
-=============================
+# Built-in Exceptions reference
 
 Here's a list of all exceptions included in Scrapy and their usage.
 
-DropItem
---------
+## DropItem
 
 .. exception:: DropItem
 
 The exception that must be raised by item pipeline stages to stop processing an
 Item. For more information see :ref:`topics-item-pipeline`.
 
-CloseSpider
------------
+## CloseSpider
 
 .. exception:: CloseSpider(reason='cancelled')
 
@@ -39,24 +25,21 @@ For example::
         if 'Bandwidth exceeded' in response.body:
             raise CloseSpider('bandwidth_exceeded')
 
-DontCloseSpider
----------------
+## DontCloseSpider
 
 .. exception:: DontCloseSpider
 
 This exception can be raised in a :signal:`spider_idle` signal handler to
 prevent the spider from being closed.
 
-IgnoreRequest
--------------
+## IgnoreRequest
 
 .. exception:: IgnoreRequest
 
 This exception can be raised by the Scheduler or any downloader middleware to
 indicate that the request should be ignored.
 
-NotConfigured
--------------
+## NotConfigured
 
 .. exception:: NotConfigured
 
@@ -70,8 +53,7 @@ remain disabled. Those components include:
 
 The exception must be raised in the component's ``__init__`` method.
 
-NotSupported
-------------
+## NotSupported
 
 .. exception:: NotSupported
 

@@ -18,10 +18,12 @@
 
 # scrapy.Spider
 
-## <font color=#42b983>class</font> scrapy.spiders.Spider {docsify-ignore}
+## <font color=#42b983>class</font> scrapy.spiders.Spider
 
 这是最简单的爬虫，也是所有其他蜘蛛必须继承的(包括与Scrapy捆绑在一起的爬虫，以及你自己编写的爬虫)。它没有提供任何特殊的功能。它只提供了一个默认的`start_requests()`方法用来发送`starturl`属性中url的请求，并为每个响应结果调用``parse()``方法。
-   
+
+### 属性
+
 > name
 
 定义此爬虫名称的字符串。  
@@ -66,43 +68,32 @@
 Python日志记录器以爬虫的`name`创建。可以使用它发送日志消息，就像在`logging`中描述的那样。
 
 
-----------
-
+### 方法
 
 > from_crawler(crawler, \*args, \**kwargs)
 
-This is the class method used by Scrapy to create your spiders.
+使用Scrapy创建爬虫的类方法。  
+你可能不需要直接重写，因为默认实现为`__init__`方法的代理，使用给定参数`args`和命名参数`kwargs`进行调用。
 
-You probably won't need to override this directly because the default
-implementation acts as a proxy to the :meth:`__init__` method, calling
-it with the given arguments `args` and named arguments `kwargs`.
+尽管如此，该方法在新实例中设置`crawler`和`settings`属性，以便稍后在爬虫代码中访问它们。
 
-Nonetheless, this method sets the :attr:`crawler` and :attr:`settings`
-attributes in the new instance so they can be accessed later inside the
-spider's code.
+#### 参数：
 
-:param crawler: crawler to which the spider will be bound
-:type crawler: :class:`~scrapy.crawler.Crawler` instance
+- crawler (**Crawler**实例) – crawler to which the spider will be bound
+- args (list) – arguments passed to the __init__() method
+- kwargs (dict) – keyword arguments passed to the __init__() method
 
-:param args: arguments passed to the :meth:`__init__` method
-:type args: list
-
-:param kwargs: keyword arguments passed to the :meth:`__init__` method
-:type kwargs: dict
 
 > start_requests()
 
-       This method must return an iterable with the first Requests to crawl for
-       this spider. It is called by Scrapy when the spider is opened for
-       scraping. Scrapy calls it only once, so it is safe to implement
-       :meth:`start_requests` as a generator.
+该方法会返回爬虫第一次请求的可迭代对象。当爬虫执行时就会被调用。
+Scrapy只会调用一次这个方法，因此将其实现为生成器是非常安全的。
 
-       The default implementation generates ``Request(url, dont_filter=True)``
-       for each url in :attr:`start_urls`.
 
-       If you want to change the Requests used to start scraping a domain, this is
-       the method to override. For example, if you need to start by logging in using
-       a POST request, you could do::
+The default implementation generates ``Request(url, dont_filter=True)`` for each url in `start_urls`.
+
+如果您想要更改用于开始抓取域名的请求，可以使用这个方法覆写。
+例如，如果您需要开始使用POST请求登录，您可以这样做:
 
 ```python
            class MySpider(scrapy.Spider):
