@@ -95,19 +95,21 @@ The default implementation generates ``Request(url, dont_filter=True)`` for each
 如果您想要更改用于开始抓取域名的请求，可以使用这个方法覆写。
 例如，如果您需要开始使用POST请求登录，您可以这样做:
 
+
 ```python
-           class MySpider(scrapy.Spider):
-               name = 'myspider'
 
-               def start_requests(self):
-                   return [scrapy.FormRequest("http://www.example.com/login",
-                                              formdata={'user': 'john', 'pass': 'secret'},
-                                              callback=self.logged_in)]
-
-               def logged_in(self, response):
-                   # here you would extract links to follow and return Requests for
-                   # each of them, with another callback
-                   pass
+	class MySpider(scrapy.Spider):
+	   name = 'myspider'
+	
+	   def start_requests(self):
+	       return [scrapy.FormRequest("http://www.example.com/login",
+	                                  formdata={'user': 'john', 'pass': 'secret'},
+	                                  callback=self.logged_in)]
+	
+	   def logged_in(self, response):
+	       # here you would extract links to follow and return Requests for
+	       # each of them, with another callback
+	       pass
 ```
 
 > parse(response)
@@ -156,7 +158,7 @@ Let's see an example::
             self.logger.info('A response from %s just arrived!', response.url)
 ```
 
-Return multiple Requests and items from a single callback::
+单个回调返回多个请求和Item：
 
 ```python
     import scrapy
@@ -267,7 +269,7 @@ See `Scrapyd documentation`_.
 Scrapy comes with some useful generic spiders that you can use to subclass
 your spiders from. Their aim is to provide convenient functionality for a few
 common scraping cases, like following all links on a site based on certain
-rules, crawling from `Sitemaps`_, or parsing an XML/CSV feed.
+rules, crawling from `Sitemaps`, or parsing an XML/CSV feed.
 
 For the examples used in the following spiders, we'll assume you have a project
 with a ``TestItem`` declared in a ``myproject.items`` module::
@@ -280,7 +282,6 @@ with a ``TestItem`` declared in a ``myproject.items`` module::
         description = scrapy.Field()
 
 
-.. currentmodule:: scrapy.spiders
 
 ## CrawlSpider
 
