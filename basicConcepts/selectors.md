@@ -1,130 +1,86 @@
-.. _topics-selectors:
-
-=========
-Selectors
+选择器(Selectors)
 =========
 
-When you're scraping web pages, the most common task you need to perform is
-to extract data from the HTML source. There are several libraries available to
-achieve this:
+当抓取网页时，你做的最常见的任务是从HTML源码中提取数据。现有的一些库可以达到这个目的：
 
- * `BeautifulSoup`_ is a very popular web scraping library among Python
-   programmers which constructs a Python object based on the structure of the
-   HTML code and also deals with bad markup reasonably well, but it has one
-   drawback: it's slow.
+ * `BeautifulSoup`是在程序员间非常流行的网页分析库，它基于HTML代码的结构来构造一个Python对象， 对不良标记的处理也非常合理，但它有一个缺点：慢。
 
- * `lxml`_ is an XML parsing library (which also parses HTML) with a pythonic
-   API based on `ElementTree`_. (lxml is not part of the Python standard
-   library.)
+ * `lxml` 是一个基于 ElementTree (不是Python标准库的一部分)的python化的XML解析库(也可以解析HTML)。
 
-Scrapy comes with its own mechanism for extracting data. They're called
-selectors because they "select" certain parts of the HTML document specified
-either by `XPath`_ or `CSS`_ expressions.
+Scrapy提取数据有自己的一套机制。它们被称作选择器(seletors)，因为他们通过特定的 XPath 或者 CSS 表达式来“选择” HTML文件中的某个部分。
 
-`XPath`_ is a language for selecting nodes in XML documents, which can also be
-used with HTML. `CSS`_ is a language for applying styles to HTML documents. It
-defines selectors to associate those styles with specific HTML elements.
+XPath 是一门用来在XML文件中选择节点的语言，也可以用在HTML上。 CSS 是一门将HTML文档样式化的语言。选择器由它定义，并与特定的HTML元素的样式相关连。
 
-Scrapy selectors are built over the `lxml`_ library, which means they're very
-similar in speed and parsing accuracy.
+Scrapy选择器构建于 lxml 库之上，这意味着它们在速度和解析准确性上非常相似。
 
-This page explains how selectors work and describes their API which is very
-small and simple, unlike the `lxml`_ API which is much bigger because the
-`lxml`_ library can be used for many other tasks, besides selecting markup
-documents.
+本页面解释了选择器如何工作，并描述了相应的API。不同于 lxml API的臃肿，该API短小而简洁。这是因为 lxml 库除了用来选择标记化文档外，还可以用到许多任务上。
 
-For a complete reference of the selectors API see
-:ref:`Selector reference <topics-selectors-ref>`
+选择器API的完全参考详见 Selector reference
 
-.. _BeautifulSoup: http://www.crummy.com/software/BeautifulSoup/
-.. _lxml: http://lxml.de/
-.. _ElementTree: https://docs.python.org/2/library/xml.etree.elementtree.html
-.. _cssselect: https://pypi.python.org/pypi/cssselect/
-.. _XPath: https://www.w3.org/TR/xpath
-.. _CSS: https://www.w3.org/TR/selectors
+* BeautifulSoup: http://www.crummy.com/software/BeautifulSoup/
+* lxml: http://lxml.de/
+* ElementTree: https://docs.python.org/2/library/xml.etree.elementtree.html
+* cssselect: https://pypi.python.org/pypi/cssselect/
+* XPath: https://www.w3.org/TR/xpath
+* CSS: https://www.w3.org/TR/selectors
 
 
-Using selectors
-===============
+# 使用选择器
 
-Constructing selectors
-----------------------
+## 构造选择器
 
 .. highlight:: python
 
-Scrapy selectors are instances of :class:`~scrapy.selector.Selector` class
-constructed by passing **text** or :class:`~scrapy.http.TextResponse`
-object. It automatically chooses the best parsing rules (XML vs HTML) based on
-input type::
+Scrapy `selector`是以 **文字(text)** 或 `TextResponse 类`构造的 `Selector` 实例。 其根据输入的类型自动选择最优的分析规则(XML vs HTML):
 
     >>> from scrapy.selector import Selector
     >>> from scrapy.http import HtmlResponse
 
-Constructing from text::
+以文字构造:
 
     >>> body = '<html><body><span>good</span></body></html>'
     >>> Selector(text=body).xpath('//span/text()').extract()
     [u'good']
 
-Constructing from response::
+以response构造:
 
     >>> response = HtmlResponse(url='http://example.com', body=body)
     >>> Selector(response=response).xpath('//span/text()').extract()
     [u'good']
 
-For convenience, response objects expose a selector on `.selector` attribute,
-it's totally OK to use this shortcut when possible::
+为了方便起见，response对象以 .selector 属性提供了一个selector， 您可以随时使用该快捷方法:
 
     >>> response.selector.xpath('//span/text()').extract()
     [u'good']
 
 
-Using selectors
----------------
+## 使用选择器
 
-To explain how to use the selectors we'll use the `Scrapy shell` (which
-provides interactive testing) and an example page located in the Scrapy
-documentation server:
+我们将使用 `Scrapy shell` (提供交互测试)和位于Scrapy文档服务器的一个样例页面，来解释如何使用选择器：
 
     http://doc.scrapy.org/en/latest/_static/selectors-sample1.html
 
-.. _topics-selectors-htmlcode:
-
-Here's its HTML code:
-
-.. literalinclude:: ../_static/selectors-sample1.html
-   :language: html
-
-.. highlight:: sh
-
-First, let's open the shell::
+首先, 我们打开shell:
 
     scrapy shell http://doc.scrapy.org/en/latest/_static/selectors-sample1.html
 
-Then, after the shell loads, you'll have the response available as ``response``
-shell variable, and its attached selector in ``response.selector`` attribute.
+接着，当shell载入后，您将获得名为 ``response`` 的shell变量，其为响应的response， 并且在其 ``response.selector`` 属性上绑定了一个selector。
 
-Since we're dealing with HTML, the selector will automatically use an HTML parser.
+因为我们处理的是HTML，选择器将自动使用HTML语法分析。
 
-.. highlight:: python
-
-So, by looking at the :ref:`HTML code <topics-selectors-htmlcode>` of that
-page, let's construct an XPath for selecting the text inside the title tag::
+那么，通过查看 `HTML code` 该页面的源码，我们构建一个XPath来选择title标签内的文字:
 
     >>> response.selector.xpath('//title/text()')
     [<Selector (text) xpath=//title/text()>]
 
-Querying responses using XPath and CSS is so common that responses include two
-convenience shortcuts: ``response.xpath()`` and ``response.css()``::
+由于在response中使用XPath、CSS查询十分普遍，因此，Scrapy提供了两个实用的快捷方式: ``response.xpath()`` 及 ``response.css()``:
 
     >>> response.xpath('//title/text()')
     [<Selector (text) xpath=//title/text()>]
     >>> response.css('title::text')
     [<Selector (text) xpath=//title/text()>]
 
-As you can see, ``.xpath()`` and ``.css()`` methods return a
-:class:`~scrapy.selector.SelectorList` instance, which is a list of new
-selectors. This API can be used for quickly selecting nested data::
+如你所见， ``.xpath()`` 及 ``.css()`` 方法返回一个类 SelectorList 的实例, 它是一个新选择器的列表。这个API可以用来快速的提取嵌套数据:
 
     >>> response.css('img').xpath('@src').extract()
     [u'image1_thumb.jpg',
@@ -133,34 +89,32 @@ selectors. This API can be used for quickly selecting nested data::
      u'image4_thumb.jpg',
      u'image5_thumb.jpg']
 
-To actually extract the textual data, you must call the selector ``.extract()``
-method, as follows::
+为了提取真实的原文数据，你需要调用 ``.extract()`` 方法如下::
 
     >>> response.xpath('//title/text()').extract()
     [u'Example website']
 
-If you want to extract only first matched element, you can call the selector ``.extract_first()``
+如果你只想提取第一个匹配到的元素，可以使用``.extract_first()``方法：
 
     >>> response.xpath('//div[@id="images"]/a/text()').extract_first()
     u'Name: My image 1 '
 
-It returns ``None`` if no element was found:
+如果没有找到任何元素则返回 ``None``:
 
     >>> response.xpath('//div[@id="not-exists"]/text()').extract_first() is None
     True
 
-A default return value can be provided as an argument, to be used instead of ``None``:
+也可以传递一个参数，来代替默认``None``的返回值：
 
     >>> response.xpath('//div[@id="not-exists"]/text()').extract_first(default='not-found')
     'not-found'
 
-Notice that CSS selectors can select text or attribute nodes using CSS3
-pseudo-elements::
+注意CSS选择器可以使用CSS3伪元素来选择text文本或属性节点：
 
     >>> response.css('title::text').extract()
     [u'Example website']
 
-Now we're going to get the base URL and some image links::
+现在我们将得到根URL(base URL)和一些图片链接:
 
     >>> response.xpath('//base/@href').extract()
     [u'http://example.com/']
@@ -196,14 +150,10 @@ Now we're going to get the base URL and some image links::
      u'image4_thumb.jpg',
      u'image5_thumb.jpg']
 
-.. _topics-selectors-nesting-selectors:
-
-Nesting selectors
+嵌套选择器
 -----------------
 
-The selection methods (``.xpath()`` or ``.css()``) return a list of selectors
-of the same type, so you can call the selection methods for those selectors
-too. Here's an example::
+选择器方法( ``.xpath()`` or ``.css()`` )返回相同类型的选择器列表，因此你也可以对这些选择器调用选择器方法。下面是一个例子:
 
     >>> links = response.xpath('//a[contains(@href, "image")]')
     >>> links.extract()
@@ -223,16 +173,12 @@ too. Here's an example::
     Link number 3 points to url [u'image4.html'] and image [u'image4_thumb.jpg']
     Link number 4 points to url [u'image5.html'] and image [u'image5_thumb.jpg']
 
-Using selectors with regular expressions
+在选择器中使用正则匹配
 ----------------------------------------
 
-:class:`~scrapy.selector.Selector` also has a ``.re()`` method for extracting
-data using regular expressions. However, unlike using ``.xpath()`` or
-``.css()`` methods, ``.re()`` returns a list of unicode strings. So you
-can't construct nested ``.re()`` calls.
+``Selector`` 也有一个 ``.re()`` 方法，用来通过正则表达式来提取数据。然而，不同于使用 ``.xpath()`` 或者 ``.css()`` 方法, ``.re()`` 方法会返回unicode字符串的列表。所以你无法构造嵌套式的 ``.re()`` 调用。
 
-Here's an example used to extract image names from the :ref:`HTML code
-<topics-selectors-htmlcode>` above::
+下面是一个例子，从上面的 HTML code 中提取图像名字:
 
     >>> response.xpath('//a[contains(@href, "image")]/text()').re(r'Name:\s*(.*)')
     [u'My image 1',
@@ -247,14 +193,12 @@ named ``.re_first()``. Use it to extract just the first matching string::
     >>> response.xpath('//a[contains(@href, "image")]/text()').re_first(r'Name:\s*(.*)')
     u'My image 1'
 
-.. _topics-selectors-relative-xpaths:
 
-Working with relative XPaths
+使用相对XPath
 ----------------------------
 
 Keep in mind that if you are nesting selectors and use an XPath that starts
-with ``/``, that XPath will be absolute to the document and not relative to the
-``Selector`` you're calling it from.
+with ``/``, that XPath will be absolute to the document and not relative to the ``Selector`` you're calling it from.
 
 For example, suppose you want to extract all ``<p>`` elements inside ``<div>``
 elements. First, you would get all ``<div>`` elements::
@@ -281,11 +225,11 @@ Another common case would be to extract all direct ``<p>`` children::
 For more details about relative XPaths see the `Location Paths`_ section in the
 XPath specification.
 
-.. _Location Paths: https://www.w3.org/TR/xpath#location-paths
+* Location Paths: https://www.w3.org/TR/xpath#location-paths
 
-.. _topics-selectors-xpath-variables:
 
-Variables in XPath expressions
+
+XPath表达式中的变量
 ------------------------------
 
 XPath allows you to reference variables in your XPath expressions, using
@@ -317,22 +261,28 @@ on `XPath variables`_.
 .. _parsel: https://parsel.readthedocs.io/
 .. _XPath variables: https://parsel.readthedocs.io/en/latest/usage.html#variables-in-xpath-expressions
 
-Using EXSLT extensions
+使用EXSLT扩展
 ----------------------
 
-Being built atop `lxml`_, Scrapy selectors also support some `EXSLT`_ extensions
-and come with these pre-registered namespaces to use in XPath expressions:
+因建于 lxml 之上, Scrapy选择器也支持一些 EXSLT 扩展，可以在XPath表达式中使用这些预先制定的命名空间：
 
 
+
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
+
+| prefix | namespace | usage |
+
 ======  =====================================    =======================
-prefix  namespace                                usage
-======  =====================================    =======================
-re      \http://exslt.org/regular-expressions    `regular expressions`_
-set     \http://exslt.org/sets                   `set manipulation`_
+re      http://exslt.org/regular-expressions    `regular expressions`
+set     http://exslt.org/sets                   `set manipulation`
 ======  =====================================    =======================
 
-Regular expressions
-~~~~~~~~~~~~~~~~~~~
+##### 正则表达式
 
 The ``test()`` function, for example, can prove quite useful when XPath's
 ``starts-with()`` or ``contains()`` are not sufficient.
@@ -363,8 +313,7 @@ Example selecting links in list item with a "class" attribute ending with a digi
     Thus, using regexp functions in your XPath expressions may add a small
     performance penalty.
 
-Set operations
-~~~~~~~~~~~~~~
+##### Set operations
 
 These can be handy for excluding parts of a document tree before
 extracting text elements for example.

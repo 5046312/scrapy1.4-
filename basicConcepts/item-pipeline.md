@@ -1,6 +1,3 @@
-.. _topics-item-pipeline:
-
-=============
 Item Pipeline
 =============
 
@@ -20,7 +17,7 @@ Typical uses of item pipelines are:
 * storing the scraped item in a database
 
 
-Writing your own item pipeline
+编写你自己的item pipeline
 ==============================
 
 Each item pipeline component is a Python class that must implement the following method:
@@ -67,12 +64,12 @@ Additionally, they may also implement the following methods:
    :type crawler: :class:`~scrapy.crawler.Crawler` object
 
 
-.. _Twisted Deferred: https://twistedmatrix.com/documents/current/core/howto/defer.html
+* Twisted Deferred: https://twistedmatrix.com/documents/current/core/howto/defer.html
 
-Item pipeline example
+Item pipeline 例子
 =====================
 
-Price validation and dropping items with no prices
+验证价格，丢弃没有价格的item
 --------------------------------------------------
 
 Let's take a look at the following hypothetical pipeline that adjusts the
@@ -80,6 +77,7 @@ Let's take a look at the following hypothetical pipeline that adjusts the
 (``price_excludes_vat`` attribute), and drops those items which don't
 contain a price::
 
+```
     from scrapy.exceptions import DropItem
 
     class PricePipeline(object):
@@ -93,15 +91,15 @@ contain a price::
                 return item
             else:
                 raise DropItem("Missing price in %s" % item)
+```
 
-
-Write items to a JSON file
+将item写入JSON文件
 --------------------------
 
 The following pipeline stores all scraped items (from all spiders) into a
 single ``items.jl`` file, containing one item per line serialized in JSON
 format::
-
+```
    import json
 
    class JsonWriterPipeline(object):
@@ -116,8 +114,8 @@ format::
            line = json.dumps(dict(item)) + "\n"
            self.file.write(line)
            return item
-
-.. note:: The purpose of JsonWriterPipeline is just to introduce how to write
+```
+> note:: The purpose of JsonWriterPipeline is just to introduce how to write
    item pipelines. If you really want to store all scraped items into a JSON
    file you should use the :ref:`Feed exports <topics-feed-exports>`.
 
@@ -131,6 +129,7 @@ MongoDB collection is named after item class.
 The main point of this example is to show how to use :meth:`from_crawler`
 method and how to clean up the resources properly.::
 
+```
     import pymongo
 
     class MongoPipeline(object):
@@ -159,8 +158,10 @@ method and how to clean up the resources properly.::
             self.db[self.collection_name].insert_one(dict(item))
             return item
 
-.. _MongoDB: https://www.mongodb.org/
-.. _pymongo: https://api.mongodb.org/python/current/
+```
+
+* MongoDB: https://www.mongodb.org/
+* pymongo: https://api.mongodb.org/python/current/
 
 
 Take screenshot of item
@@ -171,7 +172,7 @@ It uses Splash_ to render screenshot of item url. Pipeline
 makes request to locally running instance of Splash_. After request is downloaded
 and Deferred callback fires, it saves item to a file and adds filename to an item.
 
-::
+```
 
     import scrapy
     import hashlib
@@ -207,9 +208,10 @@ and Deferred callback fires, it saves item to a file and adds filename to an ite
             # Store filename in item.
             item["screenshot_filename"] = filename
             return item
+```
 
-.. _Splash: https://splash.readthedocs.io/en/stable/
-.. _Deferred: https://twistedmatrix.com/documents/current/core/howto/defer.html
+* Splash: https://splash.readthedocs.io/en/stable/
+* Deferred: https://twistedmatrix.com/documents/current/core/howto/defer.html
 
 Duplicates filter
 -----------------
@@ -234,7 +236,7 @@ returns multiples items with the same id::
                 return item
 
 
-Activating an Item Pipeline component
+启用 Item Pipeline 组件
 =====================================
 
 To activate an Item Pipeline component you must add its class to the
