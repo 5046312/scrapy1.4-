@@ -1,61 +1,43 @@
-.. _topics-shell:
-
-============
 Scrapy shell
 ============
 
-The Scrapy shell is an interactive shell where you can try and debug your
-scraping code very quickly, without having to run the spider. It's meant to be
-used for testing data extraction code, but you can actually use it for testing
-any kind of code as it is also a regular Python shell.
+Scrapy shell是一个交互终端，供你在未启动spider的情况下快速体验及调试爬取代码。它是用来测试数据提取代码的，但是实际上您可以使用它来测试任何类型的代码，因为它也是一个常规的Python shell。
 
-The shell is used for testing XPath or CSS expressions and see how they work
-and what data they extract from the web pages you're trying to scrape. It
-allows you to interactively test your expressions while you're writing your
-spider, without having to run the spider to test every change.
+shell用于测试XPath或CSS表达式，查看它们是如何工作的，还能查看从你试图提取的web页面中提取的数据。它允许你在编写爬行器时交互式地测试你的表达式，而不必每次更改后运行爬行器来测试。
 
-Once you get familiarized with the Scrapy shell, you'll see that it's an
-invaluable tool for developing and debugging your spiders.
+一旦熟悉了Scrapy shell，你就会发现它是开发和调试爬虫的一个非常有用的工具。
 
-Configuring the shell
+配置 shell
 =====================
 
-If you have `IPython`_ installed, the Scrapy shell will use it (instead of the
-standard Python console). The `IPython`_ console is much more powerful and
-provides smart auto-completion and colorized output, among other things.
+如果你已经安装了 `IPython`， Scrapy shell 将会使用它 (而不是标准的Python控制台)。 `IPython` 控制台功能强大得多，它提供了智能自动完成和彩色输出等功能。
 
-We highly recommend you install `IPython`_, specially if you're working on
-Unix systems (where `IPython`_ excels). See the `IPython installation guide`_
-for more info.
+我们强烈建议您安装`IPython`，特别是在Unix系统上(`IPython`擅长的地方)。有关更多信息，请参阅 `IPython安装指南`。
 
-Scrapy also has support for `bpython`_, and will try to use it where `IPython`_
-is unavailable.
+Scrapy 还支持 `bpython`，并将尝试在 `IPython` 不可用的地方使用它。
 
 Through scrapy's settings you can configure it to use any one of
 ``ipython``, ``bpython`` or the standard ``python`` shell, regardless of which
 are installed. This is done by setting the ``SCRAPY_PYTHON_SHELL`` environment
-variable; or by defining it in your :ref:`scrapy.cfg <topics-config-settings>`::
+variable; or by defining it in your `scrapy.cfg <topics-config-settings>`:
 
     [settings]
     shell = bpython
 
-.. _IPython: http://ipython.org/
-.. _IPython installation guide: http://ipython.org/install.html
-.. _bpython: http://www.bpython-interpreter.org/
+* IPython: http://ipython.org/
+* IPython installation guide: http://ipython.org/install.html
+* bpython: http://www.bpython-interpreter.org/
 
-Launch the shell
+启动 shell
 ================
 
-To launch the Scrapy shell you can use the :command:`shell` command like
-this::
+你可以像这样使用 `shell` 命令来启动 Scrapy shell：
 
     scrapy shell <url>
 
-Where the ``<url>`` is the URL you want to scrape.
+``<url>`` 是你想爬取的URL地址。
 
-:command:`shell` also works for local files. This can be handy if you want
-to play around with a local copy of a web page. :command:`shell` understands
-the following syntaxes for local files::
+`shell` 对本地文件同样有效。如果你想玩一下一个网页的本地拷贝，也是很方便的。`shell` 理解本地文件的以下语法：
 
     # UNIX-style
     scrapy shell ./path/to/file.html
@@ -65,15 +47,7 @@ the following syntaxes for local files::
     # File URI
     scrapy shell file:///absolute/path/to/file.html
 
-.. note:: When using relative file paths, be explicit and prepend them
-    with ``./`` (or ``../`` when relevant).
-    ``scrapy shell index.html`` will not work as one might expect (and
-    this is by design, not a bug).
-
-    Because :command:`shell` favors HTTP URLs over File URIs,
-    and ``index.html`` being syntactically similar to ``example.com``,
-    :command:`shell` will treat ``index.html`` as a domain name and trigger
-    a DNS lookup error::
+> 注意：当你使用相对路径时， 要用``./`` (或 ``../`` when relevant)放在前面。``scrapy shell index.html`` 不会像期望的那样工作(这是设计而不是bug)。因为`shell`支持HTTP url而不是文件uri。``index.html``在语法上与类似于``example.com``的相似，`shell`将会把``index.html``当成域名处理，并触发DNS查找错误:
 
         $ scrapy shell index.html
         [ ... scrapy shell starts ... ]
@@ -81,46 +55,35 @@ the following syntaxes for local files::
         twisted.internet.error.DNSLookupError: DNS lookup failed:
         address 'index.html' not found: [Errno -5] No address associated with hostname.
 
-    :command:`shell` will not test beforehand if a file called ``index.html``
-    exists in the current directory. Again, be explicit.
+如果当前文件夹下存在名为``index.html``的文件，`shell` 将不会预先测试。再次强调。
 
 
-Using the shell
+使用 shell
 ===============
 
-The Scrapy shell is just a regular Python console (or `IPython`_ console if you
-have it available) which provides some additional shortcut functions for
-convenience.
+Scrapy终端仅仅是一个普通的Python终端(或 你安装的`IPython` )。其提供了一些额外的快捷方式。
 
-Available Shortcuts
+可用的快捷命令
 -------------------
 
- * ``shelp()`` - print a help with the list of available objects and shortcuts
+ * ``shelp()`` - 打印可用对象及快捷命令的帮助列表
 
  * ``fetch(url[, redirect=True])`` - fetch a new response from the given
    URL and update all related objects accordingly. You can optionaly ask for
    HTTP 3xx redirections to not be followed by passing ``redirect=False``
 
- * ``fetch(request)`` - fetch a new response from the given request and
-   update all related objects accordingly.
+ * ``fetch(request)`` - 根据给定的请求(request)或URL获取一个新的response，并更新相关的对象
 
- * ``view(response)`` - open the given response in your local web browser, for
-   inspection. This will add a `\<base\> tag`_ to the response body in order
-   for external links (such as images and style sheets) to display properly.
-   Note, however, that this will create a temporary file in your computer,
-   which won't be removed automatically.
+ * ``view(response)`` - 在本机的浏览器打开给定的response。 其会在response的body中添加一个 < base > tag ，使得外部链接(例如图片及css)能正确显示。 注意，该操作会在本地创建一个临时文件，且该文件不会被自动删除。
 
-.. _<base> tag: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+* < base > tag: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
 
-Available Scrapy objects
+可用的Scrapy对象
 ------------------------
 
-The Scrapy shell automatically creates some convenient objects from the
-downloaded page, like the :class:`~scrapy.http.Response` object and the
-:class:`~scrapy.selector.Selector` objects (for both HTML and XML
-content).
+Scrapy shell 根据下载的页面会自动创建一些方便使用的对象, 像 `Response` 对象 和 `Selector` 对象 (都有 HTML 和 XML 内容)。
 
-Those objects are:
+这些对象有:
 
  * ``crawler`` - the current :class:`~scrapy.crawler.Crawler` object.
 
@@ -138,27 +101,18 @@ Those objects are:
 
  * ``settings`` - the current :ref:`Scrapy settings <topics-settings>`
 
-Example of shell session
+shell session 示例
 ========================
 
-Here's an example of a typical shell session where we start by scraping the
-http://scrapy.org page, and then proceed to scrape the https://reddit.com
-page. Finally, we modify the (Reddit) request method to POST and re-fetch it
-getting an error. We end the session by typing Ctrl-D (in Unix systems) or
-Ctrl-Z in Windows.
+这里有一个典型的shell session的例子，我们首先抓取http://scrapy.org页面，然后继续抓取https://reddit.com页面。最后，我们修改了(Reddit)请求方法来POST并重新获取它的错误。我们通过输入Ctrl-D(在Unix系统中)或Ctrl-Z（Windows）结束会话。
 
-Keep in mind that the data extracted here may not be the same when you try it,
-as those pages are not static and could have changed by the time you test this.
-The only purpose of this example is to get you familiarized with how the Scrapy
-shell works.
+请记住，这里提取的数据在你尝试时可能会不一样，因为这些页面不是静态的，在测试时可能会发生变化。本例的唯一目的是让您熟悉Scrapy的工作原理。
 
-First, we launch the shell::
+首先，我们启动 shell:
 
     scrapy shell 'http://scrapy.org' --nolog
 
-Then, the shell fetches the URL (using the Scrapy downloader) and prints the
-list of available objects and useful shortcuts (you'll notice that these lines
-all start with the ``[s]`` prefix)::
+接着该终端(使用Scrapy下载器(downloader))获取URL内容并打印可用的对象及快捷命令(注意到以 ``[s]` 开头的行):
 
     [s] Available Scrapy objects:
     [s]   scrapy     scrapy module (contains scrapy.Request, scrapy.Selector, etc)
@@ -177,7 +131,7 @@ all start with the ``[s]`` prefix)::
     >>>
 
 
-After that, we can start playing with the objects::
+之后，你就可以操作这些对象了:
 
     >>> response.xpath('//title/text()').extract_first()
     'Scrapy | A Fast and Powerful Scraping and Web Crawling Framework'
@@ -220,19 +174,17 @@ After that, we can start playing with the objects::
     >>>
 
 
-.. _topics-shell-inspect-response:
 
-Invoking the shell from spiders to inspect responses
+从爬虫中调用Shell来检查相应
 ====================================================
 
-Sometimes you want to inspect the responses that are being processed in a
-certain point of your spider, if only to check that response you expect is
-getting there.
+有时，如果你只是检查所期望的响应是否到达那里，您需要检查在爬虫的某一点上正在处理的响应。
 
-This can be achieved by using the ``scrapy.shell.inspect_response`` function.
+这可以通过 ``scrapy.shell.inspect_response`` 函数来实现。
 
-Here's an example of how you would call it from your spider::
+以下是如何在spider中调用该函数的例子： 
 
+```
     import scrapy
 
 
@@ -251,9 +203,11 @@ Here's an example of how you would call it from your spider::
                 inspect_response(response, self)
 
             # Rest of parsing code.
+```
 
-When you run the spider, you will get something similar to this::
+当运行spider时，将得到类似的输出:
 
+```
     2014-01-23 17:48:31-0400 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://example.com> (referer: None)
     2014-01-23 17:48:31-0400 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://example.org> (referer: None)
     [s] Available Scrapy objects:
@@ -262,25 +216,24 @@ When you run the spider, you will get something similar to this::
 
     >>> response.url
     'http://example.org'
+```
 
-Then, you can check if the extraction code is working::
+然后，可以检查提取代码是否在工作::
 
     >>> response.xpath('//h1[@class="fn"]')
     []
 
-Nope, it doesn't. So you can open the response in your web browser and see if
-it's the response you were expecting::
+呃，看来是没有。你可以在浏览器里查看response的结果，判断是否是您期望的结果:
 
     >>> view(response)
     True
 
-Finally you hit Ctrl-D (or Ctrl-Z in Windows) to exit the shell and resume the
-crawling::
+最后你可以点击Ctrl-D(Windows下Ctrl-Z)来退出shell终端，恢复爬取:
 
+```
     >>> ^D
     2014-01-23 17:50:03-0400 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://example.net> (referer: None)
     ...
+```
 
-Note that you can't use the ``fetch`` shortcut here since the Scrapy engine is
-blocked by the shell. However, after you leave the shell, the spider will
-continue crawling where it stopped, as shown above.
+注意: 由于该终端屏蔽了Scrapy引擎，你在这个Shell中不能使用 ``fetch`` 快捷命令。 当离开Shell时，spider会从其停下的地方恢复爬取，正如上面显示的那样。

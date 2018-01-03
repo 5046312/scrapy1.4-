@@ -54,14 +54,14 @@ called which actually returns the item populated with the data previously extrac
 `add_css`, and `add_value` calls.
 
 
-Input and Output processors
+输入和输出处理器
 ===========================
 
 An Item Loader contains one input processor and one output processor for each
 (item) field. The input processor processes the extracted data as soon as it's
 received (through the `add_xpath()`, `add_css()` or `add_value()` methods) and the result of the input processor is collected and kept inside the ItemLoader. After collecting all data, the `load_item()` method is called to populate and get the populated `Item` object.  That's when the output processor is called with the data previously collected (and processed using the input processor). The result of the output processor is the final value that gets assigned to the item.
 
-Let's see an example to illustrate how the input and output processors are called for a particular field (the same applies for any other field):
+Let's see an example to illustrate how the input and output processors are called for a particular field (同样适用于其他字段):
 
     l = ItemLoader(Product(), some_selector)
     l.add_xpath('name', xpath1) # (1)
@@ -70,15 +70,11 @@ Let's see an example to illustrate how the input and output processors are calle
     l.add_value('name', 'test') # (4)
     return l.load_item() # (5)
 
-So what happens is:
+发生了这些:
 
-1. Data from ``xpath1`` is extracted, and passed through the *input processor* of
-   the ``name`` field. The result of the input processor is collected and kept in
-   the Item Loader (but not yet assigned to the item).
+1. 从 ``xpath1`` 中提取的数据，传递给 *输入处理器* 的 ``name`` 字段。输入处理器的结果被收集和保存在Item Loader中(但尚未分配给该Item).
 
-2. Data from ``xpath2`` is extracted, and passed through the same *input
-   processor* used in (1). The result of the input processor is appended to the
-   data collected in (1) (if any).
+2. 从 ``xpath2`` 中提取的数据， 同样传递给（1）中使用的 *输入控制器*。 输入控制器的结果追加到（1）中搜集的数据中(如果有的话)。
 
 3. This case is similar to the previous ones, except that the data is extracted
    from the ``css`` CSS selector, and passed through the same *input
