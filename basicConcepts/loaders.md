@@ -1,43 +1,27 @@
-.. _topics-loaders:
-
-============
 Item Loaders
 ============
 
-.. module:: scrapy.loader
-   :synopsis: Item Loader class
+Item Loaders提供了一种便捷的方式填充抓取到的`Items`。虽然Items可以使用自带的类字典形式API填充, 但是Items Loaders提供了一个更方便的API，用于从一个抓取过程中填充它们，通过自动化一些常见的任务，比如在分配原始数据之前解析原始提取的数据。
 
-Item Loaders provide a convenient mechanism for populating scraped :ref:`Items
-<topics-items>`. Even though Items can be populated using their own
-dictionary-like API, Item Loaders provide a much more convenient API for
-populating them from a scraping process, by automating some common tasks like
-parsing the raw extracted data before assigning it.
+换句话说, `Items` 提供保存抓取到数据的 *容器* , 而 Item Loaders提供的是 *填充* 容器的机制。
 
-In other words, :ref:`Items <topics-items>` provide the *container* of
-scraped data, while Item Loaders provide the mechanism for *populating* that
-container.
+Item Loaders提供的是一种灵活，高效，简单的机制来扩展和覆盖不同的字段解析规则，无论是通过spider，还是通过源格式(HTML、XML等)，都不会成为维护的噩梦。
 
-Item Loaders are designed to provide a flexible, efficient and easy mechanism
-for extending and overriding different field parsing rules, either by spider,
-or by source format (HTML, XML, etc) without becoming a nightmare to maintain.
-
-Using Item Loaders to populate items
+使用 Item Loaders 填充item
 ====================================
 
-To use an Item Loader, you must first instantiate it. You can either
+使用 Item Loader, 你必须先要实例化， You can either
 instantiate it with a dict-like object (e.g. Item or dict) or without one, in
 which case an Item is automatically instantiated in the Item Loader constructor
-using the Item class specified in the :attr:`ItemLoader.default_item_class`
+using the Item class specified in the `ItemLoader.default_item_class`
 attribute.
 
-Then, you start collecting values into the Item Loader, typically using
-:ref:`Selectors <topics-selectors>`. You can add more than one value to
+Then, you start collecting values into the Item Loader, typically using `Selectors`. You can add more than one value to
 the same item field; the Item Loader will know how to "join" those values later
 using a proper processing function.
 
-Here is a typical Item Loader usage in a :ref:`Spider <topics-spiders>`, using
-the :ref:`Product item <topics-items-declaring>` declared in the :ref:`Items
-chapter <topics-items>`::
+Here is a typical Item Loader usage in a `Spider`, using
+the `Product item` declared in the `Items chapter`:
 
     from scrapy.loader import ItemLoader
     from myproject.items import Product
@@ -51,44 +35,33 @@ chapter <topics-items>`::
         l.add_value('last_updated', 'today') # you can also use literal values
         return l.load_item()
 
-By quickly looking at that code, we can see the ``name`` field is being
-extracted from two different XPath locations in the page:
+快速查看这些代码之后,我们可以看到发现 ``name`` 字段被从页面中两个不同的XPath位置提取:
 
 1. ``//div[@class="product_name"]``
 2. ``//div[@class="product_title"]``
 
 In other words, data is being collected by extracting it from two XPath
-locations, using the :meth:`~ItemLoader.add_xpath` method. This is the
+locations, using the `add_xpath` method. This is the
 data that will be assigned to the ``name`` field later.
 
 Afterwards, similar calls are used for ``price`` and ``stock`` fields
-(the latter using a CSS selector with the :meth:`~ItemLoader.add_css` method),
+(the latter using a CSS selector with the `.add_css` method),
 and finally the ``last_update`` field is populated directly with a literal value
-(``today``) using a different method: :meth:`~ItemLoader.add_value`.
+(``today``) using a different method: `add_value()`.
 
-Finally, when all data is collected, the :meth:`ItemLoader.load_item` method is
-called which actually returns the item populated with the data
-previously extracted and collected with the :meth:`~ItemLoader.add_xpath`,
-:meth:`~ItemLoader.add_css`, and :meth:`~ItemLoader.add_value` calls.
+Finally, when all data is collected, the `ItemLoader.load_item()` method is
+called which actually returns the item populated with the data previously extracted and collected with the `add_xpath`,
+`add_css`, and `add_value` calls.
 
-.. _topics-loaders-processors:
 
 Input and Output processors
 ===========================
 
 An Item Loader contains one input processor and one output processor for each
 (item) field. The input processor processes the extracted data as soon as it's
-received (through the :meth:`~ItemLoader.add_xpath`, :meth:`~ItemLoader.add_css` or
-:meth:`~ItemLoader.add_value` methods) and the result of the input processor is
-collected and kept inside the ItemLoader. After collecting all data, the
-:meth:`ItemLoader.load_item` method is called to populate and get the populated
-:class:`~scrapy.item.Item` object.  That's when the output processor is
-called with the data previously collected (and processed using the input
-processor). The result of the output processor is the final value that gets
-assigned to the item.
+received (through the `add_xpath()`, `add_css()` or `add_value()` methods) and the result of the input processor is collected and kept inside the ItemLoader. After collecting all data, the `load_item()` method is called to populate and get the populated `Item` object.  That's when the output processor is called with the data previously collected (and processed using the input processor). The result of the output processor is the final value that gets assigned to the item.
 
-Let's see an example to illustrate how the input and output processors are
-called for a particular field (the same applies for any other field)::
+Let's see an example to illustrate how the input and output processors are called for a particular field (the same applies for any other field):
 
     l = ItemLoader(Product(), some_selector)
     l.add_xpath('name', xpath1) # (1)
@@ -140,15 +113,14 @@ The other thing you need to keep in mind is that the values returned by input
 processors are collected internally (in lists) and then passed to output
 processors to populate the fields.
 
-Last, but not least, Scrapy comes with some :ref:`commonly used processors
-<topics-loaders-available-processors>` built-in for convenience.
+Last, but not least, Scrapy comes with some `commonly used processors` built-in for convenience.
 
 
 Declaring Item Loaders
 ======================
 
 Item Loaders are declared like Items, by using a class definition syntax. Here
-is an example::
+is an example:
 
     from scrapy.loader import ItemLoader
     from scrapy.loader.processors import TakeFirst, MapCompose, Join

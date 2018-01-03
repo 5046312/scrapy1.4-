@@ -1,58 +1,54 @@
 Item Pipeline
 =============
 
-After an item has been scraped by a spider, it is sent to the Item Pipeline
-which processes it through several components that are executed sequentially.
+当Item在Spider中被收集之后，会被传递到Item Pipeline，它使用一些组件按照一定的顺序对Item进行处理。
 
+每个item pipeline组件(有时称之为“Item Pipeline”)是实现了简单方法的Python类。他们接收到Item并通过它执行一些行为，同时也决定此Item是否继续通过pipeline，或是被丢弃而不再进行处理。
 Each item pipeline component (sometimes referred as just "Item Pipeline") is a
 Python class that implements a simple method. They receive an item and perform
 an action over it, also deciding if the item should continue through the
 pipeline or be dropped and no longer processed.
 
-Typical uses of item pipelines are:
+以下是item pipeline的一些典型应用：
 
-* cleansing HTML data
-* validating scraped data (checking that the items contain certain fields)
-* checking for duplicates (and dropping them)
-* storing the scraped item in a database
+* 清理HTML数据
+* 验证爬取的数据(检查item包含某些字段)
+* 查重(并丢弃)
+* 将爬取结果保存到数据库
 
 
 编写你自己的item pipeline
 ==============================
 
-Each item pipeline component is a Python class that must implement the following method:
+每个item pipeline组件是Python类，同时必须实现以下方法:
 
-.. method:: process_item(self, item, spider)
+## process_item(self, item, spider)
 
-   This method is called for every item pipeline component. :meth:`process_item`
-   must either: return a dict with data, return an :class:`~scrapy.item.Item`
-   (or any descendant class) object, return a `Twisted Deferred`_ or raise
-   :exc:`~scrapy.exceptions.DropItem` exception. Dropped items are no longer
-   processed by further pipeline components.
+每个item pipeline组件都需要调用该方法， `process_item()`有多种返回结果: 返回数据的字典，返回一个 `Item`(或任何继承类) 对象, 返回 `Twisted Deferred` 或 抛出 `DropItem` 异常。被丢弃的item将不会被之后的pipeline组件所处理。
 
-   :param item: the item scraped
-   :type item: :class:`~scrapy.item.Item` object or a dict
+参数：
+* item: `Item` 对象 或 字典。
+* spider: `Spider` 对象 - 爬取 item 的爬虫
 
-   :param spider: the spider which scraped the item
-   :type spider: :class:`~scrapy.spiders.Spider` object
+此外,他们也可以用以下方法实现:
 
-Additionally, they may also implement the following methods:
+## open_spider(self, spider)
 
-.. method:: open_spider(self, spider)
+当spider被开启时，这个方法被调用。
 
-   This method is called when the spider is opened.
+参数：
 
-   :param spider: the spider which was opened
-   :type spider: :class:`~scrapy.spiders.Spider` object
+* spider: `Spider` 对象 - 爬取 item 的爬虫
 
-.. method:: close_spider(self, spider)
+## close_spider(self, spider)
 
-   This method is called when the spider is closed.
+当spider被关闭时，这个方法被调用
 
-   :param spider: the spider which was closed
-   :type spider: :class:`~scrapy.spiders.Spider` object
+参数：
 
-.. method:: from_crawler(cls, crawler)
+* spider: `Spider` 对象 - 爬取 item 的爬虫
+
+## from_crawler(cls, crawler)
 
    If present, this classmethod is called to create a pipeline instance
    from a :class:`~scrapy.crawler.Crawler`. It must return a new instance
@@ -72,34 +68,33 @@ Item pipeline 例子
 验证价格，丢弃没有价格的item
 --------------------------------------------------
 
-Let's take a look at the following hypothetical pipeline that adjusts the
-``price`` attribute for those items that do not include VAT
-(``price_excludes_vat`` attribute), and drops those items which don't
-contain a price::
+让我们来看一下以下这个假设的pipeline，它为那些不含税(``price_excludes_vat`` 属性)的item调整了 price 属性，同时丢弃了那些没有价格的item:
 
-```
-    from scrapy.exceptions import DropItem
+```python
 
-    class PricePipeline(object):
+from scrapy.exceptions import DropItem
 
-        vat_factor = 1.15
+class PricePipeline(object):
 
-        def process_item(self, item, spider):
-            if item['price']:
-                if item['price_excludes_vat']:
-                    item['price'] = item['price'] * self.vat_factor
-                return item
-            else:
-                raise DropItem("Missing price in %s" % item)
+    vat_factor = 1.15
+
+    def process_item(self, item, spider):
+        if item['price']:
+            if item['price_excludes_vat']:
+                item['price'] = item['price'] * self.vat_factor
+            return item
+        else:
+            raise DropItem("Missing price in %s" % item)
+
 ```
 
 将item写入JSON文件
 --------------------------
 
-The following pipeline stores all scraped items (from all spiders) into a
-single ``items.jl`` file, containing one item per line serialized in JSON
-format::
-```
+以下pipeline将所有(从所有spider中)爬取到的item，存储到一个独立地 ``items.jl`` 文件，每行包含一个序列化为JSON格式的item:
+
+```python
+
    import json
 
    class JsonWriterPipeline(object):
@@ -115,18 +110,16 @@ format::
            self.file.write(line)
            return item
 ```
-> note:: The purpose of JsonWriterPipeline is just to introduce how to write
-   item pipelines. If you really want to store all scraped items into a JSON
-   file you should use the :ref:`Feed exports <topics-feed-exports>`.
+
+> 注意： JsonWriterPipeline的目的只是为了介绍怎样编写item pipeline，如果你想要将所有爬取的item都保存到同一个JSON文件， 你需要查看 `Feed exports` 。
 
 Write items to MongoDB
 ----------------------
 
-In this example we'll write items to MongoDB_ using pymongo_.
-MongoDB address and database name are specified in Scrapy settings;
+在本例中，我们将使用 pymongo 将item写入MongoDB中。MongoDB地址和数据库名都在Scrapy设置中指定，
 MongoDB collection is named after item class.
 
-The main point of this example is to show how to use :meth:`from_crawler`
+The main point of this example is to show how to use `from_crawler()`
 method and how to clean up the resources properly.::
 
 ```
@@ -167,10 +160,9 @@ method and how to clean up the resources properly.::
 Take screenshot of item
 -----------------------
 
-This example demonstrates how to return Deferred_ from :meth:`process_item` method.
-It uses Splash_ to render screenshot of item url. Pipeline
-makes request to locally running instance of Splash_. After request is downloaded
-and Deferred callback fires, it saves item to a file and adds filename to an item.
+This example demonstrates how to return Deferred_ from `process_item()` method.
+It uses Splash to render screenshot of item url. Pipeline
+makes request to locally running instance of Splash. After request is downloaded and Deferred callback fires, it saves item to a file and adds filename to an item.
 
 ```
 
@@ -213,13 +205,12 @@ and Deferred callback fires, it saves item to a file and adds filename to an ite
 * Splash: https://splash.readthedocs.io/en/stable/
 * Deferred: https://twistedmatrix.com/documents/current/core/howto/defer.html
 
-Duplicates filter
+去重
 -----------------
 
-A filter that looks for duplicate items, and drops those items that were
-already processed. Let's say that our items have a unique id, but our spider
-returns multiples items with the same id::
+一个用于查找重复的过滤器，丢弃那些已经被处理过的item。假设我们的item有一个唯一的id，但是我们spider返回的多个item中包含有相同的id:
 
+```
 
     from scrapy.exceptions import DropItem
 
@@ -234,19 +225,18 @@ returns multiples items with the same id::
             else:
                 self.ids_seen.add(item['id'])
                 return item
-
+```
 
 启用 Item Pipeline 组件
 =====================================
 
-To activate an Item Pipeline component you must add its class to the
-:setting:`ITEM_PIPELINES` setting, like in the following example::
+为了启用一个Item Pipeline组件，你必须将它的类添加到 `ITEM_PIPELINES` 配置，就像下面这个例子:
 
+```
    ITEM_PIPELINES = {
        'myproject.pipelines.PricePipeline': 300,
        'myproject.pipelines.JsonWriterPipeline': 800,
    }
+```
 
-The integer values you assign to classes in this setting determine the
-order in which they run: items go through from lower valued to higher
-valued classes. It's customary to define these numbers in the 0-1000 range.
+分配给每个类的整型值，确定了他们运行的顺序: item 则按数字从低到高的顺序通过pipeline,通常将这些数字定义在0-1000范围内。
