@@ -1,14 +1,8 @@
-.. _topics-request-response:
-
-======================
-Requests and Responses
+请求和响应 Requests and Responses
 ======================
 
-.. module:: scrapy.http
-   :synopsis: Request and Response classes
 
-Scrapy uses :class:`Request` and :class:`Response` objects for crawling web
-sites.
+Scrapy 使用 `Request` 和 `Response` 对象来爬取网页。
 
 Typically, :class:`Request` objects are generated in the spiders and pass
 across the system until they reach the Downloader, which executes the request
@@ -24,7 +18,7 @@ below in :ref:`topics-request-response-ref-request-subclasses` and
 Request objects
 ===============
 
-.. class:: Request(url[, callback, method='GET', headers, body, cookies, meta, encoding='utf-8', priority=0, dont_filter=False, errback, flags])
+### Request(url[, callback, method='GET', headers, body, cookies, meta, encoding='utf-8', priority=0, dont_filter=False, errback, flags])
 
     A :class:`Request` object represents an HTTP request, which is usually
     generated in the Spider and executed by the Downloader, and thus generating
@@ -178,9 +172,8 @@ Request objects
        is given in the ``meta`` argument). See also
        :ref:`topics-request-response-ref-request-callback-arguments`.
 
-.. _topics-request-response-ref-request-callback-arguments:
 
-Passing additional data to callback functions
+给回调函数传递额外的数据
 ---------------------------------------------
 
 The callback of a request is a function that will be called when the response
@@ -218,9 +211,9 @@ different fields from different pages::
         yield item
 
 
-.. _topics-request-response-ref-errbacks:
 
-Using errbacks to catch exceptions in request processing
+
+使用errback在请求处理中捕获异常
 --------------------------------------------------------
 
 The errback of a request is a function that will be called when an exception
@@ -279,8 +272,6 @@ errors if needed::
             elif failure.check(TimeoutError, TCPTimedOutError):
                 request = failure.request
                 self.logger.error('TimeoutError on %s', request.url)
-
-.. _topics-request-meta:
 
 Request.meta special keys
 =========================
@@ -354,7 +345,7 @@ The meta key is used set retry times per request. When initialized, the
 
 .. _topics-request-response-ref-request-subclasses:
 
-Request subclasses
+Request 子类
 ==================
 
 Here is the list of built-in :class:`Request` subclasses. You can also subclass
@@ -635,7 +626,7 @@ Response objects
 
 .. _topics-request-response-ref-response-subclasses:
 
-Response subclasses
+Response 子类
 ===================
 
 Here is the list of available built-in Response subclasses. You can also
@@ -728,7 +719,7 @@ TextResponse objects
 HtmlResponse objects
 --------------------
 
-.. class:: HtmlResponse(url[, ...])
+### HtmlResponse(url[, ...])
 
     The :class:`HtmlResponse` class is a subclass of :class:`TextResponse`
     which adds encoding auto-discovering support by looking into the HTML `meta
@@ -739,11 +730,11 @@ HtmlResponse objects
 XmlResponse objects
 -------------------
 
-.. class:: XmlResponse(url[, ...])
+### XmlResponse(url[, ...])
 
     The :class:`XmlResponse` class is a subclass of :class:`TextResponse` which
     adds encoding auto-discovering support by looking into the XML declaration
     line.  See :attr:`TextResponse.encoding`.
 
-.. _Twisted Failure: https://twistedmatrix.com/documents/current/api/twisted.python.failure.Failure.html
-.. _bug in lxml: https://bugs.launchpad.net/lxml/+bug/1665241
+* Twisted Failure: https://twistedmatrix.com/documents/current/api/twisted.python.failure.Failure.html
+* bug in lxml: https://bugs.launchpad.net/lxml/+bug/1665241
