@@ -6,49 +6,45 @@ being able to store the scraped data properly and, quite often, that means
 generating an "export file" with the scraped data (commonly called "export
 feed") to be consumed by other systems.
 
-Scrapy provides this functionality out of the box with the Feed Exports, which
-allows you to generate a feed with the scraped items, using multiple
-serialization formats and storage backends.
 
+Scrapy 提供了Feed导出功能，支持使用多种序列化格式及存储方式储存抓取到的item。
 
-Serialization formats
+序列化格式
 =====================
 
-For serializing the scraped data, the feed exports use the :ref:`Item exporters
-<topics-exporters>`. These formats are supported out of the box:
+为了序列化所爬取的数据，feed导出使用`Item exporters`。这些支持以下格式:
 
- * :ref:`topics-feed-format-json`
- * :ref:`topics-feed-format-jsonlines`
- * :ref:`topics-feed-format-csv`
- * :ref:`topics-feed-format-xml`
+ * `json`
+ * `jsonlines`
+ * `csv`
+ * `xml`
 
-But you can also extend the supported format through the
-:setting:`FEED_EXPORTERS` setting.
+但是，也可以通过`FEED_EXPORTERS`设置扩展支持的格式。
 
 
 JSON
 ----
 
- * :setting:`FEED_FORMAT`: ``json``
- * Exporter used: :class:`~scrapy.exporters.JsonItemExporter`
- * See :ref:`this warning <json-with-large-data>` if you're using JSON with
+ * `FEED_FORMAT`: ``json``
+ * Exporter used: `JsonItemExporter`
+ * See `this warning <json-with-large-data>` if you're using JSON with
    large feeds.
 
 
 JSON lines
 ----------
 
- * :setting:`FEED_FORMAT`: ``jsonlines``
- * Exporter used: :class:`~scrapy.exporters.JsonLinesItemExporter`
+ * `FEED_FORMAT`: ``jsonlines``
+ * Exporter used: `JsonLinesItemExporter`
 
 
 CSV
 ---
 
- * :setting:`FEED_FORMAT`: ``csv``
- * Exporter used: :class:`~scrapy.exporters.CsvItemExporter`
+ * `FEED_FORMAT`: ``csv``
+ * Exporter used: `~scrapy.exporters.CsvItemExporter`
  * To specify columns to export and their order use
-   :setting:`FEED_EXPORT_FIELDS`. Other feed exporters can also use this
+   `FEED_EXPORT_FIELDS`. Other feed exporters can also use this
    option, but it is important for CSV because unlike many other export
    formats CSV uses a fixed header.
 
@@ -56,22 +52,22 @@ CSV
 XML
 ---
 
- * :setting:`FEED_FORMAT`: ``xml``
- * Exporter used: :class:`~scrapy.exporters.XmlItemExporter`
+ * `FEED_FORMAT`: ``xml``
+ * Exporter used: `~scrapy.exporters.XmlItemExporter`
 
 
 Pickle
 ------
 
- * :setting:`FEED_FORMAT`: ``pickle``
- * Exporter used: :class:`~scrapy.exporters.PickleItemExporter`
+ * `FEED_FORMAT`: ``pickle``
+ * Exporter used: `~scrapy.exporters.PickleItemExporter`
 
 
 Marshal
 -------
 
- * :setting:`FEED_FORMAT`: ``marshal``
- * Exporter used: :class:`~scrapy.exporters.MarshalItemExporter`
+ * `FEED_FORMAT`: ``marshal``
+ * Exporter used: `~scrapy.exporters.MarshalItemExporter`
 
 
 
@@ -84,10 +80,10 @@ storage backend types which are defined by the URI scheme.
 
 The storages backends supported out of the box are:
 
- * :ref:`topics-feed-storage-fs`
- * :ref:`topics-feed-storage-ftp`
- * :ref:`topics-feed-storage-s3` (requires botocore_ or boto_)
- * :ref:`topics-feed-storage-stdout`
+ * `fs`
+ * `ftp`
+ * `s3` (requires botocore or boto)
+ * `stdout`
 
 Some storage backends may be unavailable if the required external libraries are
 not available. For example, the S3 backend is only available if the botocore_
@@ -183,14 +179,14 @@ Settings
 
 These are the settings used for configuring the feed exports:
 
- * :setting:`FEED_URI` (mandatory)
- * :setting:`FEED_FORMAT`
- * :setting:`FEED_STORAGES`
- * :setting:`FEED_EXPORTERS`
- * :setting:`FEED_STORE_EMPTY`
- * :setting:`FEED_EXPORT_ENCODING`
- * :setting:`FEED_EXPORT_FIELDS`
- * :setting:`FEED_EXPORT_INDENT`
+ * `FEED_URI` (mandatory)
+ * `FEED_FORMAT`
+ * `FEED_STORAGES`
+ * `FEED_EXPORTERS`
+ * `FEED_STORE_EMPTY`
+ * `FEED_EXPORT_ENCODING`
+ * `FEED_EXPORT_FIELDS`
+ * `FEED_EXPORT_INDENT`
 
 .. currentmodule:: scrapy.extensions.feedexport
 
