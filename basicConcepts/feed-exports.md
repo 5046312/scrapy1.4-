@@ -1,10 +1,5 @@
-.. _topics-feed-exports:
-
-============
 Feed exports
 ============
-
-.. versionadded:: 0.10
 
 One of the most frequently required features when implementing scrapers is
 being able to store the scraped data properly and, quite often, that means
@@ -15,7 +10,6 @@ Scrapy provides this functionality out of the box with the Feed Exports, which
 allows you to generate a feed with the scraped items, using multiple
 serialization formats and storage backends.
 
-.. _topics-feed-format:
 
 Serialization formats
 =====================
@@ -31,7 +25,6 @@ For serializing the scraped data, the feed exports use the :ref:`Item exporters
 But you can also extend the supported format through the
 :setting:`FEED_EXPORTERS` setting.
 
-.. _topics-feed-format-json:
 
 JSON
 ----
@@ -41,7 +34,6 @@ JSON
  * See :ref:`this warning <json-with-large-data>` if you're using JSON with
    large feeds.
 
-.. _topics-feed-format-jsonlines:
 
 JSON lines
 ----------
@@ -49,7 +41,6 @@ JSON lines
  * :setting:`FEED_FORMAT`: ``jsonlines``
  * Exporter used: :class:`~scrapy.exporters.JsonLinesItemExporter`
 
-.. _topics-feed-format-csv:
 
 CSV
 ---
@@ -61,7 +52,6 @@ CSV
    option, but it is important for CSV because unlike many other export
    formats CSV uses a fixed header.
 
-.. _topics-feed-format-xml:
 
 XML
 ---
@@ -69,7 +59,6 @@ XML
  * :setting:`FEED_FORMAT`: ``xml``
  * Exporter used: :class:`~scrapy.exporters.XmlItemExporter`
 
-.. _topics-feed-format-pickle:
 
 Pickle
 ------
@@ -77,7 +66,6 @@ Pickle
  * :setting:`FEED_FORMAT`: ``pickle``
  * Exporter used: :class:`~scrapy.exporters.PickleItemExporter`
 
-.. _topics-feed-format-marshal:
 
 Marshal
 -------
@@ -86,7 +74,6 @@ Marshal
  * Exporter used: :class:`~scrapy.exporters.MarshalItemExporter`
 
 
-.. _topics-feed-storage:
 
 Storages
 ========
@@ -107,7 +94,6 @@ not available. For example, the S3 backend is only available if the botocore_
 or boto_ library is installed (Scrapy supports boto_ only on Python 2).
 
 
-.. _topics-feed-uri-params:
 
 Storage URI parameters
 ======================
@@ -133,12 +119,10 @@ Here are some examples to illustrate:
    * ``s3://mybucket/scraping/feeds/%(name)s/%(time)s.json``
 
 
-.. _topics-feed-storage-backends:
 
 Storage backends
 ================
 
-.. _topics-feed-storage-fs:
 
 Local filesystem
 ----------------
@@ -153,7 +137,6 @@ Note that for the local filesystem storage (only) you can omit the scheme if
 you specify an absolute path like ``/tmp/export.csv``. This only works on Unix
 systems though.
 
-.. _topics-feed-storage-ftp:
 
 FTP
 ---
@@ -164,7 +147,6 @@ The feeds are stored in a FTP server.
  * Example URI: ``ftp://user:pass@ftp.example.com/path/to/export.csv``
  * Required external libraries: none
 
-.. _topics-feed-storage-s3:
 
 S3
 --
@@ -185,7 +167,6 @@ passed through the following settings:
  * :setting:`AWS_ACCESS_KEY_ID`
  * :setting:`AWS_SECRET_ACCESS_KEY`
 
-.. _topics-feed-storage-stdout:
 
 Standard output
 ---------------
@@ -213,7 +194,6 @@ These are the settings used for configuring the feed exports:
 
 .. currentmodule:: scrapy.extensions.feedexport
 
-.. setting:: FEED_URI
 
 FEED_URI
 --------
@@ -267,7 +247,6 @@ If an exporter requires a fixed set of fields (this is the case for
 is empty or None, then Scrapy tries to infer field names from the
 exported data - currently it uses field names from the first item.
 
-.. setting:: FEED_EXPORT_INDENT
 
 FEED_EXPORT_INDENT
 ------------------
@@ -283,7 +262,6 @@ Currently implemented only by :class:`~scrapy.exporters.JsonItemExporter`
 and :class:`~scrapy.exporters.XmlItemExporter`, i.e. when you are exporting
 to ``.json`` or ``.xml``.
 
-.. setting:: FEED_STORE_EMPTY
 
 FEED_STORE_EMPTY
 ----------------
@@ -292,7 +270,6 @@ Default: ``False``
 
 Whether to export empty feeds (ie. feeds with no items).
 
-.. setting:: FEED_STORAGES
 
 FEED_STORAGES
 -------------
@@ -302,7 +279,6 @@ Default: ``{}``
 A dict containing additional feed storage backends supported by your project.
 The keys are URI schemes and the values are paths to storage classes.
 
-.. setting:: FEED_STORAGES_BASE
 
 FEED_STORAGES_BASE
 ------------------
@@ -326,7 +302,6 @@ can disable any of these backends by assigning ``None`` to their URI scheme in
         'ftp': None,
     }
 
-.. setting:: FEED_EXPORTERS
 
 FEED_EXPORTERS
 --------------
@@ -337,7 +312,6 @@ A dict containing additional exporters supported by your project. The keys are
 serialization formats and the values are paths to :ref:`Item exporter
 <topics-exporters>` classes.
 
-.. setting:: FEED_EXPORTERS_BASE
 
 FEED_EXPORTERS_BASE
 -------------------
@@ -362,7 +336,7 @@ format in :setting:`FEED_EXPORTERS`. E.g., to disable the built-in CSV exporter
         'csv': None,
     }
 
-.. _URI: https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
-.. _Amazon S3: https://aws.amazon.com/s3/
-.. _boto: https://github.com/boto/boto
-.. _botocore: https://github.com/boto/botocore
+* URI: https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
+* Amazon S3: https://aws.amazon.com/s3/
+* boto: https://github.com/boto/boto
+* botocore: https://github.com/boto/botocore
