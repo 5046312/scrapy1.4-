@@ -52,8 +52,8 @@ Scrapy用这些旧版本的包可以运行，但不保证可以一直正常运�
 # 使用virtualenv (推荐)
 
 我们建议在所有平台的虚拟环境中安装Scrapy。
-可以在全局或用户空间安装Python包。我们不建议安装Scrapy系统。
-相反，我们建议您在所谓的“虚拟环境”(virtualenv)中安装Scrapy。
+可以在全局或用户空间安装Python包。我们不建议直接在系统环境下安装Scrapy。
+相反，我们建议在“虚拟环境”(virtualenv)中安装Scrapy。
 virtualenv允许您不与已安装的Python系统包冲突(这可能会破坏您的系统工具和脚本)，并且仍然可以正常地使用pip(不包括 ``sudo``)安装包。
 
 要使用虚拟环境，请参阅virtualenv安装说明。
@@ -84,7 +84,7 @@ $ [sudo] pip install virtualenv
 ## Windows
 
 虽然可以在Windows上使用pip安装Scrapy，但是我们推荐您
-安装“Anaconda”_或“Miniconda”，并使用该包“conda - forge”频道，因为可以避免大多数安装问题的发生。
+安装“Anaconda”或“Miniconda”，并使用该包“conda - forge”频道，因为可以避免大多数安装问题的发生。
 
 一旦你安装了“Anaconda”或“Miniconda”，就可以用命令进行安装了:
 
