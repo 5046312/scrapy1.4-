@@ -49,7 +49,7 @@ Scrapy用这些旧版本的包可以运行，但不保证可以一直正常运�
 * `lxml installation`: http://lxml.de/installation.html
 * `cryptography installation`: https://cryptography.io/en/latest/installation/
 
-# 使用虚拟环境 (推荐)
+# 使用virtualenv (推荐)
 
 我们建议在所有平台的虚拟环境中安装Scrapy。
 可以在全局或用户空间安装Python包。我们不建议安装Scrapy系统。
