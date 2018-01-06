@@ -68,10 +68,10 @@ $ [sudo] pip install virtualenv
 !> 如果您使用Linux或OS X，那么`virtualenvwrapper`是创建`虚拟环境`比较方便的工具。一旦你创建了一个`虚拟环境`，你就可以用`pip`像安装其他Python包一样的安装Scrapy。  
 （参见：`特定平台安装指南` 包含可能需要预先安装的非python依赖项的说明）
 
-默认情况下可以使用Python 2或者Python 3，创建Python `虚拟环境`。
+默认情况下可以使用Python 2或者Python 3，创建Python `virtualenv`。
 
-* 如果你想用Python3安装Scrapy，就在Python 3 `虚拟环境`中安装Scrapy。
-* 如果你想用Python2安装Scrapy，就在Python 2 `虚拟环境`中安装Scrapy。  
+* 如果你想用Python3安装Scrapy，就在Python 3 `virtualenv`中安装Scrapy。
+* 如果你想用Python2安装Scrapy，就在Python 2 `virtualenv`中安装Scrapy。  
 
 
 * virtualenv: https://virtualenv.pypa.io
