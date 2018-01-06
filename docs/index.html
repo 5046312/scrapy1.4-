@@ -22,10 +22,6 @@
   <div id="app">Loading ...</div>
   <script>
     window.$docsify = {
-      alias: {
-        '.*?/changelog': 'https://raw.githubusercontent.com/QingWei-Li/docsify/master/CHANGELOG',
-        '/.*/_navbar.md': '/_navbar.md'
-      },
       auto2top: true,
       coverpage: true,
       executeScript: true,
@@ -35,7 +31,7 @@
       maxLevel: 4,
       subMaxLevel: 2,
       ga: 'UA-106147152-1',
-      name: 'docsify',
+      name: 'Scrapy1.4中文文档',
       search: {
         noData: {
           '/de-de/': 'Keine Ergebnisse!',
@@ -53,7 +49,7 @@
       plugins: [
         function(hook, vm) {
           hook.beforeEach(function (html) {
-            var url = 'https://github.com/QingWei-Li/docsify/blob/master/docs/' + vm.route.file
+            var url = 'https://github.com/5046312/scrapy1.4-chinese-document/master/docs/' + vm.route.file
             var editHtml = '[:memo: Edit Document](' + url + ')\n'
             return editHtml
               + html
