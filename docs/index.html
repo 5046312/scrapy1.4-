@@ -48,7 +48,7 @@
       plugins: [
         function(hook, vm) {
           hook.beforeEach(function (html) {
-            var url = 'https://github.com/5046312/scrapy1.4-chinese-document/master/docs/' + vm.route.file
+            var url = 'https://github.com/5046312/scrapy1.4-chinese-document/blob/master/docs/' + vm.route.file
             var editHtml = '[:memo: Edit Document](' + url + ')\n'
             return editHtml
               + html
