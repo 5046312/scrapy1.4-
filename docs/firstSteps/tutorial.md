@@ -26,7 +26,7 @@ Scrapy是用Python编写的。如果你对Python这门语言比较陌生的话�
 
 # 新建项目
 
-在你开始爬虫项目之前，你需要先创建一个Scrapy项目。进入一个你想存放代码的文件夹，然后运行:
+在开始爬虫项目之前，你需要先创建一个Scrapy项目。进入一个你想存放代码的文件夹，运行:
 
     scrapy startproject tutorial
 
@@ -43,9 +43,9 @@ Scrapy是用Python编写的。如果你对Python这门语言比较陌生的话�
                 __init__.py
 
 
-# 我们的第一只爬虫
+# 第一只爬虫
 
-爬虫都是你定义的类，而Scrapy使用它们从网页中爬取数据。它们必须都继承`scrapy.Spider`，并且要定义初始请求要做的工作，如何在页面中爬行链接，如何解析页面中的内容导出数据。
+爬虫都是你定义的类，而Scrapy使用它们从网页中爬取数据。它们必须都继承`scrapy.Spider`，并且要定义初始请求要做的工作，定义如何在页面中爬行链接、如何解析页面中的内容来导出数据。
 
 这是我们的第一个爬虫的代码。将它保存在项目中``tutorial/spiders``目录下，命名为``quotes_spider.py``的文件中:
 
@@ -73,17 +73,17 @@ Scrapy是用Python编写的。如果你对Python这门语言比较陌生的话�
 ```
 
 
-如你所见，我们Spider子类是`scrapy.Spider`，然后定义了一些属性和方法：
+如你所见，爬虫的子类是`scrapy.Spider`，然后定义了一些属性和方法：
 
 * `name`: 是爬虫的标识。项目中必须使用唯一的name，也就是说，你不能为不同的蜘蛛起重复的名字。
-* `start_requests()`: 必须返回一个可以迭代的请求，（您可以返回一个请求列表，或者编写一个生成器函数）这样蜘蛛才会开始爬行。后续的请求也将依次从这些初始请求中生成。
+* `start_requests()`: 必须返回一个可以迭代的请求（可以返回一个请求列表，或者编写一个生成器函数），这样才会开始爬行。后续的请求也将依次从这些初始请求中生成。
 * `parse()`: 用于处理每次请求响应的方法。响应参数是保存页面内容的`TextResponse`的对象，并且有进一步的帮助方法来处理它。
 
-`parse()` 方法经常用于解析响应，将抓取的数据提取为字典形式，然后找到新的url来追踪，再新建一个请求 `Request` 。
+`parse()` 方法经常用于解析响应，将抓取的数据提取为字典形式，然后找到新的url来追踪，再新建一个 `Request` 。
 
-## 如何运行我们的爬虫程序
+## 如何运行爬虫程序
 
-要让我们的爬虫开始工作，需要到项目根目录，运行:
+要让爬虫开始工作，需要到项目根目录，运行:
 
 	scrapy crawl quotes
 
@@ -103,16 +103,16 @@ Scrapy是用Python编写的。如果你对Python这门语言比较陌生的话�
 
 现在再查看当前目录的文件，你应该发现了两个新生成的文件 *quotes-1.html* 和 *quotes-2.html*，里面包含了 ``parse`` 方法通过各个Url所获取的响应body。
 
-.. note:: 如果您想知道为什么我们还没有解析HTML，请稍候，我们将很快就开始讨论这个问题。
+> 如果您想知道为什么我们还没有解析HTML，请稍候，我们将很快就开始讨论这个问题。
 
-## 背后究竟发生了什么?
+## 背后发生了什么?
 
 Scrapy 安排调度 ``start_requests``方法返回的 `scrapy.Request` 对象。
 在收到每个响应之后，它将实例化`Response`对象，并调用与请求关联的回调方法(在本例中，``parse``方法)将响应作为参数进行传递。
 
 ## start_requests方法的快捷方式
 
-与其实现`start_requests`方法来从url生成`scrapy.Request`对象，不如用一个url列表来定义类中的`start_urls`属性。
+与其使用`start_requests`方法来从url生成`scrapy.Request`对象，不如定义类中的`start_urls`属性（url列表）。
 `start_requests`将默认使用这个列表来创建初始的请求：
 
 ```python
@@ -133,21 +133,21 @@ class QuotesSpider(scrapy.Spider):
             f.write(response.body)
 ```
 
-`parse()`方法将被调用来处理这些url的每一个请求，尽管我们还没有明确告诉Scrapy要这样做。
+`parse()`方法将处理这些url的每一个请求，尽管我们还没有明确告诉Scrapy要这样做。
 这是因为`parse()` 是 Scrapy 的默认回调方法，它在没有被分配回调的情况下默认调用。
 
 
 ## 提取数据
 
-学习如何用 Scrapy 提取数据的最好方法是使用shell的 `Scrapy shell` 来尝试选择器:
+学习如何用 Scrapy 提取数据的最好方法是使用shell的 `Scrapy shell` 来测试选择器:
 
 ```
 scrapy shell 'http://quotes.toscrape.com/page/1/'
 ```
 
-一定要记住，当从命令行中运行Scrapy时，url地址一定要包含在引号中，否则包含参数(ie. ``&`` character)的url将不起作用
+一定要记住，当从命令行中运行Scrapy时，url地址一定要包含在引号中，否则包含参数(如 ``&`` 符)的url将不起作用
 
-   在Windows上，使用双引号代替:
+   在Windows上，要使用双引号：
 
 ```
 scrapy shell "http://quotes.toscrape.com/page/1/"
@@ -173,7 +173,7 @@ scrapy shell "http://quotes.toscrape.com/page/1/"
 >>>
 ```
 
-使用shell，可以尝试对响应对象使用`CSS`来选择元素：
+使用shell，对响应对象使用`CSS`来测试选择元素：
 
 ```
 >>> response.css('title')
@@ -190,14 +190,14 @@ scrapy shell "http://quotes.toscrape.com/page/1/"
 ```
 
 这里要注意两点: 
-* 一个是我们已经在CSS查询中添加了``::text``，这意味着我们在``<title>``的元素中只选择文本元素。如果我们不指定``::text``，我们将获得完整的标题元素，包括它的标签。
+* 我们已经在CSS查询中添加了``::text``，这意味着我们在``<title>``的元素中只选择文本元素。如果我们不指定``::text``，我们将获得完整的标题元素，包括它的标签。
 
 ```
 >>> response.css('title').extract()
 ['<title>Quotes to Scrape</title>']
 ```
 
-* 另一个是 ``extract()`` 的调用结果是一个列表, 因为我们一会儿将要处理`SelectorList`实例，如果你只想知道第一次的结果，你可以这样做:
+*  ``extract()`` 的返回结果是一个列表, 因为我们一会儿要处理`SelectorList`实例，如果你只想知道第一项的结果，你可以这样做:
 
 ```
 >>> response.css('title::text').extract_first()
@@ -211,11 +211,11 @@ scrapy shell "http://quotes.toscrape.com/page/1/"
 'Quotes to Scrape'
 ```
 
-但是,使用``extract_first()``可以在找不到任何元素的时候返回``None``，避免了``IndexError``。
+而且使用``extract_first()``可以在找不到任何元素的时候返回``None``，避免了``IndexError``。
 
-这里有一个小经验:对于大多数的抓取代码，您希望它能够对由于在页面上找不到的东西而产生的错误保持弹性，这样即使某些部分不能被抓取到，但至少可以得到 **一些** 数据。
+这里有一个小经验：对于大多数的抓取代码，更希望它能够对由于在页面上找不到的东西而产生的错误保持弹性，这样即使某些部分不能被抓取到，但至少可以得到 **一些** 数据。
 
-除了`extract()`和`extract_first()`方法，你也可以使用`Selector.re()`用*正则表达式*的方式选择元素:
+除了 `extract()` 和 `extract_first()` 方法，也可以使用 `Selector.re()` 用*正则表达式*来选择元素：
 
 ```
 >>> response.css('title::text').re(r'Quotes.*')
@@ -226,16 +226,16 @@ scrapy shell "http://quotes.toscrape.com/page/1/"
 ['Quotes', 'Scrape']
 ```
 
-为了找到合适的CSS选择器，您可能需要在web浏览器中的shell找到可用的响应页面。
-您可以使用您的浏览器开发工具或扩展，如Firebug (查看 `topics-firebug` 和 `topics-firefox` 章节).
+为了找到合适的CSS选择器，可能需要在web浏览器中的shell找到可用的响应页面。
+可以使用浏览器开发工具或扩展，如Firebug (查看 `firebug` 和 `firefox` 章节)。
 
-`Selector Gadget` 是一个很好的工具，可以快速地找到CSS选择器，以选择在许多浏览器中使用的可视化元素.
+`Selector Gadget` 是一个很好的工具，可以快速地找到CSS选择器，以选择在许多浏览器中使用的可视化元素。
 
 * regular expressions: https://docs.python.org/3/library/re.html
 * Selector Gadget: http://selectorgadget.com/
 
 
-### XPath:一个简短的介绍
+### XPath：简短的介绍
 
 除了`CSS`，Scrapy 还支持使用 `XPath` 表达式:
 
@@ -246,11 +246,14 @@ scrapy shell "http://quotes.toscrape.com/page/1/"
 'Quotes to Scrape'
 ```
 
-XPath表达式非常强大，并且是Scrapy选择器的基础。实际上，CSS选择器在底层也是被转换为XPath的。如果仔细阅读shell中选择器对象的文本表示你就会有所发现。
+XPath表达式非常强大，并且是Scrapy选择器的基础。实际上，CSS选择器在底层也是被转换为XPath的。
+如果仔细阅读shell中选择器对象的文本说明，你就会有所发现。
 
-虽然XPath表达式可能不像CSS选择器那样受欢迎，但它提供了更多的功能，因为除了导航结构，它还可以查看内容。使用XPath，您可以选择诸如:*选择包含文本"下一页"的链接*。这使得XPath非常适用于抓取任务，我们鼓励你学习XPath，即使您已经知道如何构造CSS选择器，它也会使抓取变得更加容易。
+虽然XPath表达式可能不像CSS选择器那样受欢迎，但它提供了更多的功能，因为除了导航结构，它还可以查看内容。
+使用XPath，可以选择诸如:*选择包含文本"下一页"的链接*。这使得XPath非常适用于抓取任务，我们鼓励你学习XPath，即使你已经知道如何构造CSS选择器，它也会使抓取变得更加容易。
 
-关于Xpath我们在这里就不赘述了, 你可以去:`using XPath with Scrapy Selectors here`学习更多关于Xpath的内容。  
+关于Xpath我们在这里就不赘述了, 你可以去:`using XPath with Scrapy Selectors here`学习更多关于Xpath的内容。 
+ 
 我们也推荐 `this tutorial to learn XPath through examples <http://zvon.org/comp/r/tut-XPath_1.html>` 和 `this tutorial to learn "how to think in XPath" <http://plasmasturm.org/log/xpath101/>`。
 
 
@@ -259,7 +262,7 @@ XPath表达式非常强大，并且是Scrapy选择器的基础。实际上，CSS
 
 ### 提取名言和作者
 
-现在您已经了解了一些关于选择器和提取的知识，让我们通过编写从网页中提取名言的代码来完成我们的蜘蛛吧。
+相信你已经了解了一些关于选择器和提取的知识，让我们通过编写从网页中提取名言的代码来完成我们的爬虫吧。
 
 http://quotes.toscrape.com 中的每条名言都是类似这种Html结构:
 
@@ -332,11 +335,11 @@ $ scrapy shell 'http://quotes.toscrape.com'
 >>>
 ```
 
-## 用我们的爬虫导出数据
+## 使用爬虫导出数据
 
-让我们回到蜘蛛。直到现在，它还没有提取任何数据，只是将整个HTML页面保存到一个本地文件中。让我们将提取逻辑集成到我们的蜘蛛中。
+让我们回到蜘蛛。直到现在，它还没有提取任何数据，只是将整个HTML页面保存到一个本地文件中。让我们将提取逻辑集成到爬虫中。
 
-Scrapy蜘蛛通常生成许多包含从页面中提取数据的字典。要做到这一点,在回调我们使用``yield``关键字，如下:
+Scrapy爬虫通常生成许多包含从页面中提取数据的字典。要做到这一点,在回调中我们使用``yield``关键字：
 
 ```python
 import scrapy
@@ -358,7 +361,7 @@ class QuotesSpider(scrapy.Spider):
             }
 ```
 
-如果运行爬虫，它将用日志输出提取的数据::
+如果运行爬虫，日志中将会输出提取的数据::
 
 ```
 2016-09-19 18:57:19 [scrapy.core.scraper] DEBUG: Scraped from <200 http://quotes.toscrape.com/page/1/>
@@ -377,17 +380,19 @@ scrapy crawl quotes -o quotes.json
 
 这将生成一个``quotes.json``文件，包含所有抓取到的item（序列化为json格式）。
 
-出于历史原因，Scrapy追加到一个给定的文件，而不是覆盖它的内容。如果在第二次之前不删除（或清空）文件，运行此命令两次，最终将使用一个破碎的JSON文件。
+出于历史原因，Scrapy将会把内容追加到一个给定的文件中，而不是覆盖原本的内容。
+如果在第二次运行前，不删除（或清空）文件中的内容，运行此命令两次，最终将得到一个破坏的JSON文件。
 你也可以使用其他格式，例如 `JSON Lines`:
 
 ```
 scrapy crawl quotes -o quotes.jl
 ```
 
-`JSON Lines`格式很有用，因为它是流式的，您可以轻松地附加新记录。在运行两次时，它不会遇到相同的JSON问题。另外，由于每个记录都是单独的行，您可以处理成大文件，而不需要将所有内容都放在内存中，有像JQ这样的工具来帮助在命令行中执行这些操作。
+`JSON Lines`格式很有用，因为它是流式的，可以轻松地附加新记录。在运行两次时，不会遇到相同的JSON问题。
+另外，由于每个记录都是单独的行，您可以处理成大文件，而不需要将所有内容都放在内存中，有像JQ这样的工具来帮助在命令行中执行这些操作。
 
-在一些小型项目中(比如本教程中的项目)，这就足够了。但是，如果您想要用抓取的Item来执行更复杂的操作，您可以编写一个`Item Pipeline`。
-当项目创建时，在``tutorial/pipelines.py``中生成了Pipeline的占位符文件。如果您只是想存储这些抓取来的item，则不需要设置任何Pipeline。
+在一些小型项目中(比如本教程中的项目)，这就足够了。但是，如果想要用抓取的Item来执行更复杂的操作，可以编写一个`Item Pipeline`。
+当项目创建时，在``tutorial/pipelines.py``中生成了Pipeline的占位符文件。如果只是想存储这些抓取来的item，则不需要设置任何Pipeline。
 
 * JSON Lines: http://jsonlines.org
 * JQ: https://stedolan.github.io/jq
@@ -396,9 +401,9 @@ scrapy crawl quotes -o quotes.jl
 # 追踪链接
 
 如果你不只是想从 http://quotes.toscrape.com 抓取前两页，而是获得网站中所有页面中的名言，
-那么你就需要如何从全部页面中提取数据了，接下来让我们一起看看究竟该如何才能追踪到全部的链接吧！
+那么你就需要学习如何从全部页面中提取数据了，接下来让我们一起看看究竟该如何才能追踪到全部的链接吧！
 
-第一件事是提取到我们想要跟随的页面的链接。检查页面中的html信息，我们可以看到有一个链接是跳转到下一页的:
+第一件事就是提取想要跟随页面的链接。检查页面中的html信息，我们可以看到有一个链接是跳转到下一页的:
 
 ```html
 <ul class="pager">
@@ -415,7 +420,8 @@ scrapy crawl quotes -o quotes.jl
 '<a href="/page/2/">Next <span aria-hidden="true">→</span></a>'
 ```
 
-这样我们就定位了这一个元素，但我们想要得到``href``属性。为此，Scrapy支持一个CSS扩展，可以让你用下面的方法来选择属性内容:
+这样我们就定位了这个元素，但我们想要得到``href``属性。
+为此，Scrapy支持一个CSS扩展，可以让你用下面的方法来选择属性内容:
 
 ```
 >>> response.css('li.next a::attr(href)').extract_first()
@@ -451,15 +457,15 @@ class QuotesSpider(scrapy.Spider):
 
 现在，在提取数据之后，``parse()``方法会查找前往下一个页面的链接，使用``urljoin``方法（因为链接可以是相对的）创建一个绝对的URL，并返回一个前往下一页的新请求，注册为回调来提取下一个页面的数据，并继续爬行所有的页面。
 
-你在这里看到的是Scrapy跟踪链接的机制：当您在一个回调方法中产生一个请求时，Scrapy将会调度这个请求，并在请求结束时注册一个回调方法。
+你在这里看到的是Scrapy跟踪链接的机制：当你在一个回调方法中产生一个请求时，Scrapy将会调度这个请求，并在请求结束时注册一个回调方法。
 
-利用这个机制，你可以构建复杂的爬虫程序，根据您定义的规则跟踪链接，并根据访问的页面提取不同类型的数据。
+利用这个机制，你可以构建复杂的爬虫程序，根据你定义的规则跟踪链接，并根据访问的页面提取不同类型的数据。
 
 在我们的例子中创建了一个循环，可以跟踪链接到下一个页面的全部url，直到找不到为止 -- 可以非常方便地抓取博客、论坛和其他具有分页功能的站点。
 
 ## 发送请求的快捷方式
 
-你可以使用 `response.follow`:，作为创建请求对象的快捷方式:
+你可以使用 `response.follow()`，作为创建请求对象的快捷方式：
 
 ```python
     import scrapy

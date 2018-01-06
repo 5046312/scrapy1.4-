@@ -31,7 +31,7 @@
 	- [Using FireFox for scraping](solvingSpecificProblems/firefox.md)
 	- [Using Firebug for scraping](solvingSpecificProblems/firebug.md)
 	- [Debugging memory leaks](solvingSpecificProblems/leaks.md)
-	- [Downloading and processing files and images](solvingSpecificProblems/media-pipeline.md)
+	- [下载、处理文件和图像](solvingSpecificProblems/media-pipeline.md)
 	- [Deploying Spiders](solvingSpecificProblems/deploy.md)
 	- [AutoThrottle extension](solvingSpecificProblems/autothrottle.md)
 	- [Benchmarking](solvingSpecificProblems/benchmarking.md)
