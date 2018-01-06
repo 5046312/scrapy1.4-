@@ -1,2 +1,5 @@
 - 第一步
-  - [Scrapy初见](firstSteps/overview.md)
+  - [Scrapy 初见](firstSteps/overview.md)
+  - [Scrapy 安装](firstSteps/install.md)
+  - [Scrapy 教程](firstSteps/tutorial.md)
+  - [Scrapy 例子](firstSteps/examples.md)
