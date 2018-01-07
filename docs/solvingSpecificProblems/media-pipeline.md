@@ -36,7 +36,7 @@ Scrapy 提供可重复使用的`item pipelines`，使用某一特定item下载�
 =========================
 
 `ImagesPipeline` 的用法很像 `FilesPipeline`，
-除了使用的默认字段名称不同：使用 ``image_urls`` 存放 item的图像url，它将为有关下载图像的信息填充到 ``images`` 字段。
+除了使用的默认字段名称不同：使用 ``image_urls`` 存放 item的图像url， ``images`` 字段则存放有关下载图像的信息。
 
 使用 `ImagesPipeline` 处理图像文件的优点是，你可以配置一些额外的功能，如生成缩略图并根据它们的大小对图像进行过滤。
 
@@ -63,15 +63,15 @@ Files Pipeline， 使用：
 
 > 你也可以同时使用文件和图像管道。
 
-然后，将目标存储设置配置为一个有效值，该值将用于存储下载的图像。否则，管道将保持禁用状态，即使你将其包含在`ITEM_PIPELINES`设置中。
+然后，将目标存储目录设置为一个有效值，该值将用于存储下载的图像。否则，管道将保持禁用状态，即使你已经设置了 `ITEM_PIPELINES` 项。
 
 Files Pipeline, 设置 `FILES_STORE` 项：
 
-   FILES_STORE = '/path/to/valid/dir'
+	FILES_STORE = '/path/to/valid/dir'
 
 Images Pipeline，设置 `IMAGES_STORE` 项：
 
-   IMAGES_STORE = '/path/to/valid/dir'
+	IMAGES_STORE = '/path/to/valid/dir'
 
 支持存储
 =================
