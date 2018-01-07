@@ -29,7 +29,6 @@ Scrapy选择器构建于 lxml 库之上，这意味着它们在速度和解析�
 
 ## 构造选择器
 
-.. highlight:: python
 
 Scrapy `selector`是以 **文字(text)** 或 `TextResponse 类`构造的 `Selector` 实例。 其根据输入的类型自动选择最优的分析规则(XML vs HTML):
 
