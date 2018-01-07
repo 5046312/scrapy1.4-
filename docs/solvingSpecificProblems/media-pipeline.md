@@ -1,87 +1,61 @@
-Downloading and processing files and images
+下载、处理文件和图片
 ===========================================
 
-.. currentmodule:: scrapy.pipelines.images
+Scrapy 提供可重复使用的`item pipelines`，使用某一特定item下载附件(例如，当抓取时，也想在下载它们的图像到本地)。
 
-Scrapy provides reusable :doc:`item pipelines </topics/item-pipeline>` for
-downloading files attached to a particular item (for example, when you scrape
-products and also want to download their images locally). These pipelines share
-a bit of functionality and structure (we refer to them as media pipelines), but
-typically you'll either use the Files Pipeline or the Images Pipeline.
+这些管道共享一些功能和结构(我们称它们为媒体管道- medie pipeline)，但通常要么使用文件管道（Files Pipeline），要么使用图像管道（Images Pipeline）。
 
-Both pipelines implement these features:
+这两种管道都实现了这些特性：
 
-* Avoid re-downloading media that was downloaded recently
-* Specifying where to store the media (filesystem directory, Amazon S3 bucket,
-  Google Cloud Storage bucket)
+* 避免重新下载最近下载的媒体。
+* 指定存储文件的位置(系统目录、Amazon S3 bucket、谷歌云存储)。
 
-The Images Pipeline has a few extra functions for processing images:
+图像管道（Images Pipeline）有一些处理图像的额外功能:
 
-* Convert all downloaded images to a common format (JPG) and mode (RGB)
-* Thumbnail generation
-* Check images width/height to make sure they meet a minimum constraint
+* 将所有下载的图像转换为通用格式(JPG)和模式(RGB)
+* 生成缩略图
+* 检查图像的宽度/高度以确保它们符合最小约束条件
 
-The pipelines also keep an internal queue of those media URLs which are currently
-being scheduled for download, and connect those responses that arrive containing
-the same media to that queue. This avoids downloading the same media more than
-once when it's shared by several items.
+管道还保留了当前正在计划下载的媒体url的内部队列，并将那些到达的包含相同图片的项目连接到那个队列中。 这可以避免多次下载几个项目共享的同一个图片。
 
-Using the Files Pipeline
+使用文件管道 Files Pipeline
 ========================
 
-The typical workflow, when using the :class:`FilesPipeline` goes like
-this:
+当使用  `FilesPipeline`  ，典型的工作流是这样的：
 
-1. In a Spider, you scrape an item and put the URLs of the desired into a
-   ``file_urls`` field.
+1. 在一个Spider中，可以抓取一个 item，并将所需的url放入``file_urls``字段中。
 
-2. The item is returned from the spider and goes to the item pipeline.
+2. 该 item 从 spider 返回并进入 item pipeline。
 
-3. When the item reaches the :class:`FilesPipeline`, the URLs in the
-   ``file_urls`` field are scheduled for download using the standard
-   Scrapy scheduler and downloader (which means the scheduler and downloader
-   middlewares are reused), but with a higher priority, processing them before other
-   pages are scraped. The item remains "locked" at that particular pipeline stage
-   until the files have finish downloading (or fail for some reason).
+3. 当 item 到达 `FilesPipeline` 时，file_urls字段中的url将被安排使用标准的 scrapy 调度器和下载器(这意味着调度器和下载器中间件被重用)，但是因为更高的优先级，将在其他页面被抓取之前处理它们。该 item 在特定的管道阶段仍然“锁定”，直到文件完成下载(或出于某种原因失败)。
 
-4. When the files are downloaded, another field (``files``) will be populated
-   with the results. This field will contain a list of dicts with information
-   about the downloaded files, such as the downloaded path, the original
-   scraped url (taken from the ``file_urls`` field) , and the file checksum.
-   The files in the list of the ``files`` field will retain the same order of
-   the original ``file_urls`` field. If some file failed downloading, an
-   error will be logged and the file won't be present in the ``files`` field.
+4. 当下载文件时，将会填充另一个字段(``files``)。这个字段将包含一个关于已下载文件的信息列表，如下载的路径、原始的抓取url(取自``file_urls``字段)和文件校验。文件字段列表中的文件将保留原始``file_urls``字段的相同顺序。如果某些文件未能下载，将会记录错误，文件将不会出现在``files``字段中。
 
 
-Using the Images Pipeline
+使用图片管道 Images Pipeline
 =========================
 
-Using the :class:`ImagesPipeline` is a lot like using the :class:`FilesPipeline`,
+Using the `ImagesPipeline` is a lot like using the `FilesPipeline`,
 except the default field names used are different: you use ``image_urls`` for
 the image URLs of an item and it will populate an ``images`` field for the information
 about the downloaded images.
 
-The advantage of using the :class:`ImagesPipeline` for image files is that you
+The advantage of using the `ImagesPipeline` for image files is that you
 can configure some extra functions like generating thumbnails and filtering
 the images based on their size.
 
-The Images Pipeline uses `Pillow`_ for thumbnailing and normalizing images to
+The Images Pipeline uses `Pillow` for thumbnailing and normalizing images to
 JPEG/RGB format, so you need to install this library in order to use it.
-`Python Imaging Library`_ (PIL) should also work in most cases, but it is known
-to cause troubles in some setups, so we recommend to use `Pillow`_ instead of
+`Python Imaging Library` (PIL) should also work in most cases, but it is known
+to cause troubles in some setups, so we recommend to use `Pillow` instead of
 PIL.
 
-.. _Pillow: https://github.com/python-pillow/Pillow
-.. _Python Imaging Library: http://www.pythonware.com/products/pil/
+* Pillow: https://github.com/python-pillow/Pillow
+* Python Imaging Library: http://www.pythonware.com/products/pil/
 
 
-.. _topics-media-pipeline-enabling:
-
-Enabling your Media Pipeline
+开启媒体管道 （Media Pipeline）
 ============================
-
-.. setting:: IMAGES_STORE
-.. setting:: FILES_STORE
 
 To enable your media pipeline you must first add it to your project
 :setting:`ITEM_PIPELINES` setting.
@@ -95,8 +69,7 @@ For Files Pipeline, use::
     ITEM_PIPELINES = {'scrapy.pipelines.files.FilesPipeline': 1}
 
 
-.. note::
-    You can also use both the Files and Images Pipeline at the same time.
+> You can also use both the Files and Images Pipeline at the same time.
 
 
 Then, configure the target storage setting to a valid value that will be used
@@ -111,7 +84,7 @@ For the Images Pipeline, set the :setting:`IMAGES_STORE` setting::
 
    IMAGES_STORE = '/path/to/valid/dir'
 
-Supported Storage
+支持存储
 =================
 
 File system is currently the only officially supported storage, but there are
@@ -120,7 +93,7 @@ also support for storing files in `Amazon S3`_ and `Google Cloud Storage`_.
 .. _Amazon S3: https://aws.amazon.com/s3/
 .. _Google Cloud Storage: https://cloud.google.com/storage/
 
-File system storage
+文件系统存储
 -------------------
 
 The files are stored using a `SHA1 hash`_ of their URLs for the file names.
@@ -145,7 +118,7 @@ Where:
 * ``full`` is a sub-directory to separate full images from thumbnails (if
   used). For more info see :ref:`topics-images-thumbnails`.
 
-Amazon S3 storage
+Amazon S3 存储
 -----------------
 
 .. setting:: FILES_STORE_S3_ACL
@@ -170,7 +143,7 @@ For more information, see `canned ACLs`_ in the Amazon S3 Developer Guide.
 
 .. _canned ACLs: https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
 
-Google Cloud Storage
+谷歌云存储
 ---------------------
 
 .. setting:: GCS_PROJECT_ID
@@ -189,7 +162,7 @@ For information about authentication, see this `documentation`_.
 
 .. _documentation: https://cloud.google.com/docs/authentication/production
 
-Usage example
+用例
 =============
 
 .. setting:: FILES_URLS_FIELD
@@ -240,7 +213,7 @@ called MyPipeline and you want to have custom IMAGES_URLS_FIELD you define
 setting MYPIPELINE_IMAGES_URLS_FIELD and your custom settings will be used.
 
 
-Additional features
+附加功能
 ===================
 
 File expiration
@@ -272,7 +245,7 @@ and pipeline class MyPipeline will have expiration time set to 180.
 
 .. _topics-images-thumbnails:
 
-Thumbnail generation for images
+生成图片的缩略图
 -------------------------------
 
 The Images Pipeline can automatically create thumbnails of the downloaded
@@ -312,7 +285,7 @@ Example of image files stored using ``small`` and ``big`` thumbnail names::
 
 The first one is the full image, as downloaded from the site.
 
-Filtering out small images
+过滤掉小的图片
 --------------------------
 
 .. setting:: IMAGES_MIN_HEIGHT
@@ -338,7 +311,7 @@ all be dropped because at least one dimension is shorter than the constraint.
 
 By default, there are no size constraints, so all images are processed.
 
-Allowing redirections
+允许重定向
 ---------------------
 
 .. setting:: MEDIA_ALLOW_REDIRECTS
@@ -352,7 +325,7 @@ To handle media redirections, set this setting to ``True``::
 
 .. _topics-media-pipeline-override:
 
-Extending the Media Pipelines
+扩展媒体管道
 =============================
 
 .. module:: scrapy.pipelines.files
@@ -464,11 +437,10 @@ See here the methods that you can override in your custom Images Pipeline:
       By default, the :meth:`item_completed` method returns the item.
 
 
-Custom Images pipeline example
+自定义图片管道的例子
 ==============================
 
-Here is a full example of the Images Pipeline whose methods are examplified
-above::
+这里有一个图像管道的完整示例，其方法在上面进行了测试：
 
     import scrapy
     from scrapy.pipelines.images import ImagesPipeline
@@ -487,5 +459,5 @@ above::
             item['image_paths'] = image_paths
             return item
 
-.. _Twisted Failure: https://twistedmatrix.com/documents/current/api/twisted.python.failure.Failure.html
-.. _MD5 hash: https://en.wikipedia.org/wiki/MD5
+* Twisted Failure: https://twistedmatrix.com/documents/current/api/twisted.python.failure.Failure.html
+* MD5 hash: https://en.wikipedia.org/wiki/MD5
