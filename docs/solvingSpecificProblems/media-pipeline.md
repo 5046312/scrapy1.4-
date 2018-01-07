@@ -35,20 +35,13 @@ Scrapy 提供可重复使用的`item pipelines`，使用某一特定item下载�
 使用图片管道 Images Pipeline
 =========================
 
-Using the `ImagesPipeline` is a lot like using the `FilesPipeline`,
-except the default field names used are different: you use ``image_urls`` for
-the image URLs of an item and it will populate an ``images`` field for the information
-about the downloaded images.
+`ImagesPipeline` 的用法很像 `FilesPipeline`，
+除了使用的默认字段名称不同：使用 ``image_urls`` 存放 item的图像url，它将为有关下载图像的信息填充到 ``images`` 字段。
 
-The advantage of using the `ImagesPipeline` for image files is that you
-can configure some extra functions like generating thumbnails and filtering
-the images based on their size.
+使用 `ImagesPipeline` 处理图像文件的优点是，你可以配置一些额外的功能，如生成缩略图并根据它们的大小对图像进行过滤。
 
-The Images Pipeline uses `Pillow` for thumbnailing and normalizing images to
-JPEG/RGB format, so you need to install this library in order to use it.
-`Python Imaging Library` (PIL) should also work in most cases, but it is known
-to cause troubles in some setups, so we recommend to use `Pillow` instead of
-PIL.
+图像管道使用 `Pillow` 进行缩略图并将图像规范化为JPEG / RGB格式，所以需要你安装这个库才能使用它。Python映像库(PIL)在大多数情况下也应该使用，但是它在一些设置中会引起麻烦，所以我们建议使用`Pillow`而不是PIL。
+
 
 * Pillow: https://github.com/python-pillow/Pillow
 * Python Imaging Library: http://www.pythonware.com/products/pil/
@@ -57,75 +50,64 @@ PIL.
 开启媒体管道 （Media Pipeline）
 ============================
 
-To enable your media pipeline you must first add it to your project
-:setting:`ITEM_PIPELINES` setting.
+要开启媒体管道，你必须首先将它添加到项目的设置 `ITEM_PIPELINES` 中。
 
-For Images Pipeline, use::
+Images Pipeline， 使用：
 
     ITEM_PIPELINES = {'scrapy.pipelines.images.ImagesPipeline': 1}
 
-For Files Pipeline, use::
+Files Pipeline， 使用：
 
     ITEM_PIPELINES = {'scrapy.pipelines.files.FilesPipeline': 1}
 
 
-> You can also use both the Files and Images Pipeline at the same time.
+> 你也可以同时使用文件和图像管道。
 
+然后，将目标存储设置配置为一个有效值，该值将用于存储下载的图像。否则，管道将保持禁用状态，即使你将其包含在`ITEM_PIPELINES`设置中。
 
-Then, configure the target storage setting to a valid value that will be used
-for storing the downloaded images. Otherwise the pipeline will remain disabled,
-even if you include it in the :setting:`ITEM_PIPELINES` setting.
-
-For the Files Pipeline, set the :setting:`FILES_STORE` setting::
+Files Pipeline, 设置 `FILES_STORE` 项：
 
    FILES_STORE = '/path/to/valid/dir'
 
-For the Images Pipeline, set the :setting:`IMAGES_STORE` setting::
+Images Pipeline，设置 `IMAGES_STORE` 项：
 
    IMAGES_STORE = '/path/to/valid/dir'
 
 支持存储
 =================
 
-File system is currently the only officially supported storage, but there are
-also support for storing files in `Amazon S3`_ and `Google Cloud Storage`_.
+文件系统目前是唯一官方支持的存储，但也支持在`Amazon S3`和谷歌云中存储文件。
 
-.. _Amazon S3: https://aws.amazon.com/s3/
-.. _Google Cloud Storage: https://cloud.google.com/storage/
+* Amazon S3: https://aws.amazon.com/s3/
+* Google Cloud Storage: https://cloud.google.com/storage/
 
 文件系统存储
 -------------------
 
-The files are stored using a `SHA1 hash`_ of their URLs for the file names.
+存储的文件使用它们URL的 `SHA1 hash` 作为文件名。
 
-For example, the following image URL::
+比如，对下面的图片URL：
 
     http://www.example.com/image.jpg
 
-Whose `SHA1 hash` is::
+它的 `SHA1 hash` ：
 
     3afec3b4765f8f0a07b78f98c07b83f013567a0a
 
-Will be downloaded and stored in the following file::
+将下载并存储在以下文件中：
 
    <IMAGES_STORE>/full/3afec3b4765f8f0a07b78f98c07b83f013567a0a.jpg
 
-Where:
+其中：
 
-* ``<IMAGES_STORE>`` is the directory defined in :setting:`IMAGES_STORE` setting
-  for the Images Pipeline.
+* ``<IMAGES_STORE>`` 是在`IMAGES_STORE`设置中为图像管道定义的目录。
 
-* ``full`` is a sub-directory to separate full images from thumbnails (if
-  used). For more info see :ref:`topics-images-thumbnails`.
+* ``full`` 是一个子目录，可以将完整的图像从缩略图中分离出来(如果使用的话)。有关更多信息，请参见`缩略图`章节。
 
 Amazon S3 存储
 -----------------
 
-.. setting:: FILES_STORE_S3_ACL
-.. setting:: IMAGES_STORE_S3_ACL
-
-:setting:`FILES_STORE` and :setting:`IMAGES_STORE` can represent an Amazon S3
-bucket. Scrapy will automatically upload the files to the bucket.
+`FILES_STORE` and `IMAGES_STORE` can represent an Amazon S3 bucket. Scrapy will automatically upload the files to the bucket.
 
 For example, this is a valid :setting:`IMAGES_STORE` value::
 
@@ -146,40 +128,29 @@ For more information, see `canned ACLs`_ in the Amazon S3 Developer Guide.
 谷歌云存储
 ---------------------
 
-.. setting:: GCS_PROJECT_ID
+`FILES_STORE` and `IMAGES_STORE` can represent a Google Cloud Storage bucket. Scrapy will automatically upload the files to the bucket. (requires `google-cloud-storage` )
 
-:setting:`FILES_STORE` and :setting:`IMAGES_STORE` can represent a Google Cloud Storage
-bucket. Scrapy will automatically upload the files to the bucket. (requires `google-cloud-storage`_ )
+* google-cloud-storage: https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python
 
-.. _google-cloud-storage: https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python
-
-For example, these are valid :setting:`IMAGES_STORE` and :setting:`GCS_PROJECT_ID` settings::
+For example, these are valid `IMAGES_STORE` and `GCS_PROJECT_ID` settings::
 
     IMAGES_STORE = 'gs://bucket/images/'
     GCS_PROJECT_ID = 'project_id'
 
-For information about authentication, see this `documentation`_.
+For information about authentication, see this `documentation`.
 
-.. _documentation: https://cloud.google.com/docs/authentication/production
+* documentation: https://cloud.google.com/docs/authentication/production
 
 用例
 =============
 
-.. setting:: FILES_URLS_FIELD
-.. setting:: FILES_RESULT_FIELD
-.. setting:: IMAGES_URLS_FIELD
-.. setting:: IMAGES_RESULT_FIELD
+为了使用媒体管道，需要先开启它（查看本章上面的内容）。
 
-In order to use a media pipeline first, :ref:`enable it
-<topics-media-pipeline-enabling>`.
+接下来，如果 spider 返回一个带有url 键(分别是``file_urls``或``image_urls``，对于文件或图像管道)的字典，管道将把结果放在相应的密钥(``files`` or ``images``)下。
 
-Then, if a spider returns a dict with the URLs key (``file_urls`` or
-``image_urls``, for the Files or Images Pipeline respectively), the pipeline will
-put the results under respective key (``files`` or ``images``).
+如果您更喜欢使用 `Item` 类，那么定义一个具有必要字段的自定义 item，例如在这个用于图像管道的例子：
 
-If you prefer to use :class:`~.Item`, then define a custom item with the
-necessary fields, like in this example for Images Pipeline::
-
+```
     import scrapy
 
     class MyItem(scrapy.Item):
@@ -187,45 +158,34 @@ necessary fields, like in this example for Images Pipeline::
         # ... other item fields ...
         image_urls = scrapy.Field()
         images = scrapy.Field()
+```
 
-If you want to use another field name for the URLs key or for the results key,
-it is also possible to override it.
+如果你想要为url键或结果键使用另一个字段名，也可以覆盖它。
 
-For the Files Pipeline, set :setting:`FILES_URLS_FIELD` and/or
-:setting:`FILES_RESULT_FIELD` settings::
+Files Pipeline，设置`FILES_URLS_FIELD` 和/或 `FILES_RESULT_FIELD` 设置：
 
     FILES_URLS_FIELD = 'field_name_for_your_files_urls'
     FILES_RESULT_FIELD = 'field_name_for_your_processed_files'
 
-For the Images Pipeline, set :setting:`IMAGES_URLS_FIELD` and/or
-:setting:`IMAGES_RESULT_FIELD` settings::
+Images Pipeline，设置 `IMAGES_URLS_FIELD` 和/或 `IMAGES_RESULT_FIELD` 设置：
 
     IMAGES_URLS_FIELD = 'field_name_for_your_images_urls'
     IMAGES_RESULT_FIELD = 'field_name_for_your_processed_images'
 
-If you need something more complex and want to override the custom pipeline
-behaviour, see :ref:`topics-media-pipeline-override`.
+如果需要更复杂的东西，并希望覆盖自定义的管道行为，可以参见 `media-pipeline-override`。
 
-If you have multiple image pipelines inheriting from ImagePipeline and you want
-to have different settings in different pipelines you can set setting keys
-preceded with uppercase name of your pipeline class. E.g. if your pipeline is
-called MyPipeline and you want to have custom IMAGES_URLS_FIELD you define
-setting MYPIPELINE_IMAGES_URLS_FIELD and your custom settings will be used.
+如果你有多个从 ImagePipeline 继承的图像管道，并且希望在不同的管道中有不同的设置，那么可以在管道类的大写名称之前设置设置键。如果你的管道被称为 MyPipeline，并且希望有自定义的IMAGES_URLS_FIELD，那么你可以定义设置项：MYPIPELINE_IMAGES_URLS_FIELD，这样就可以使用自定义设置。
 
 
 附加功能
 ===================
 
-File expiration
+文件过期
 ---------------
 
-.. setting:: IMAGES_EXPIRES
-.. setting:: FILES_EXPIRES
+图像管道会避免下载最近下载过的文件。
 
-The Image Pipeline avoids downloading files that were downloaded recently. To
-adjust this retention delay use the :setting:`FILES_EXPIRES` setting (or
-:setting:`IMAGES_EXPIRES`, in case of Images Pipeline), which
-specifies the delay in number of days::
+若要调整此保留延迟时间，请使用 `FILES_EXPIRES` 设置项 (或使用图像管道则设置`IMAGES_EXPIRES`)，该设置指定了延迟的天数：
 
     # 120 days of delay for files expiration
     FILES_EXPIRES = 120
@@ -233,97 +193,79 @@ specifies the delay in number of days::
     # 30 days of delay for images expiration
     IMAGES_EXPIRES = 30
 
-The default value for both settings is 90 days.
+这两个设置的默认值为90天。
 
-If you have pipeline that subclasses FilesPipeline and you'd like to have
-different setting for it you can set setting keys preceded by uppercase
-class name. E.g. given pipeline class called MyPipeline you can set setting key:
+如果项目中有FilesPipeline的子类管道，并且想要有不同的设置，你可以设置以大写的类名前面的设置键。例如，给定管道类名为MyPipeline，可以这样设置设置键：
 
     MYPIPELINE_FILES_EXPIRES = 180
 
-and pipeline class MyPipeline will have expiration time set to 180.
+这样管道类 MyPipeline 过期时间设置为180。
 
-.. _topics-images-thumbnails:
 
 生成图片的缩略图
 -------------------------------
 
-The Images Pipeline can automatically create thumbnails of the downloaded
-images.
+图像管道可以自动创建下载图像的缩略图。
 
-.. setting:: IMAGES_THUMBS
+为了使用这个特性，必须设置 `IMAGES_THUMBS` 为一个字典，其中键是缩略图名称，值是它们的尺寸。
 
-In order use this feature, you must set :setting:`IMAGES_THUMBS` to a dictionary
-where the keys are the thumbnail names and the values are their dimensions.
-
-For example::
+例如：
 
    IMAGES_THUMBS = {
        'small': (50, 50),
        'big': (270, 270),
    }
 
-When you use this feature, the Images Pipeline will create thumbnails of the
-each specified size with this format::
+当使用此功能时，图像管道将使用这种格式创建每个指定大小的缩略图：
 
     <IMAGES_STORE>/thumbs/<size_name>/<image_id>.jpg
 
-Where:
+其中：
 
-* ``<size_name>`` is the one specified in the :setting:`IMAGES_THUMBS`
-  dictionary keys (``small``, ``big``, etc)
+* ``<size_name>`` 是在设置项 `IMAGES_THUMBS` 中指定的字典的key (``small``, ``big`` 等)
 
-* ``<image_id>`` is the `SHA1 hash`_ of the image url
+* ``<image_id>`` 是图片url的 `SHA1 hash`
 
-.. _SHA1 hash: https://en.wikipedia.org/wiki/SHA_hash_functions
+* SHA1 hash: https://en.wikipedia.org/wiki/SHA_hash_functions
 
-Example of image files stored using ``small`` and ``big`` thumbnail names::
+图像文件存储的例子中使用了 ``small`` 和 ``big`` 作为缩略图名：
 
    <IMAGES_STORE>/full/63bbfea82b8880ed33cdb762aa11fab722a90a24.jpg
    <IMAGES_STORE>/thumbs/small/63bbfea82b8880ed33cdb762aa11fab722a90a24.jpg
    <IMAGES_STORE>/thumbs/big/63bbfea82b8880ed33cdb762aa11fab722a90a24.jpg
 
-The first one is the full image, as downloaded from the site.
+第一个是从网站下载的完整图像。
 
-过滤掉小的图片
+过滤掉尺寸小的图片
 --------------------------
 
-.. setting:: IMAGES_MIN_HEIGHT
+当使用图像管道时，可以删除尺寸过小的图片，通过 `IMAGES_MIN_HEIGHT` 和 `IMAGES_MIN_WIDTH` 设置，指定最小允许的高、宽尺寸。
 
-.. setting:: IMAGES_MIN_WIDTH
-
-When using the Images Pipeline, you can drop images which are too small, by
-specifying the minimum allowed size in the :setting:`IMAGES_MIN_HEIGHT` and
-:setting:`IMAGES_MIN_WIDTH` settings.
-
-For example::
+例如：
 
    IMAGES_MIN_HEIGHT = 110
    IMAGES_MIN_WIDTH = 110
 
-.. note::
-    The size constraints don't affect thumbnail generation at all.
 
-It is possible to set just one size constraint or both. When setting both of
-them, only images that satisfy both minimum sizes will be saved. For the
-above example, images of sizes (105 x 105) or (105 x 200) or (200 x 105) will
-all be dropped because at least one dimension is shorter than the constraint.
+> 尺寸限制不会影响缩略图的生成。
 
-By default, there are no size constraints, so all images are processed.
+可以只设置一个大小限制或两者都设置。
+当设置它们时，只有满足两个最小尺寸的图像才能被保存。
+
+上面的例子中，尺寸(105×105)或(105×200)或(200×105)的图像都将被删除，因为至少有一个维度小于了约束限制。
+
+默认情况下，没有大小限制，因此会处理所有图像。
 
 允许重定向
 ---------------------
 
-.. setting:: MEDIA_ALLOW_REDIRECTS
+默认媒体管道忽略重定向，即HTTP重定向到媒体文件URL请求将意味着媒体(media)下载失败。
 
-By default media pipelines ignore redirects, i.e. an HTTP redirection
-to a media file URL request will mean the media download is considered failed.
-
-To handle media redirections, set this setting to ``True``::
+要处理媒体重定向，请将该设置设置为``True``:
 
     MEDIA_ALLOW_REDIRECTS = True
 
-.. _topics-media-pipeline-override:
+
 
 扩展媒体管道
 =============================
@@ -331,7 +273,7 @@ To handle media redirections, set this setting to ``True``::
 .. module:: scrapy.pipelines.files
    :synopsis: Files Pipeline
 
-See here the methods that you can override in your custom Files Pipeline:
+在这里你可以看到在自定义文件管道中覆盖的方法：
 
 .. class:: FilesPipeline
 
