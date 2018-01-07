@@ -455,7 +455,7 @@ class QuotesSpider(scrapy.Spider):
 
 ```
 
-现在，在提取数据之后，``parse()``方法会查找前往下一个页面的链接，使用``urljoin``方法（因为链接可以是相对的）创建一个绝对的URL，并返回一个前往下一页的新请求，注册为回调来提取下一个页面的数据，并继续爬行所有的页面。
+现在，在提取数据之后，``parse()``方法会查找前往下一个页面的链接，使用``urljoin``方法（因为链接可以是相对的）创建一个绝对URL，并返回一个前往下一页的新请求，注册为回调来提取下一个页面的数据，并继续爬行所有的页面。
 
 你在这里看到的是Scrapy跟踪链接的机制：当你在一个回调方法中产生一个请求时，Scrapy将会调度这个请求，并在请求结束时注册一个回调方法。
 
@@ -468,28 +468,28 @@ class QuotesSpider(scrapy.Spider):
 你可以使用 `response.follow()`，作为创建请求对象的快捷方式：
 
 ```python
-    import scrapy
+import scrapy
 
 
-    class QuotesSpider(scrapy.Spider):
-        name = "quotes"
-        start_urls = [
-            'http://quotes.toscrape.com/page/1/',
-        ]
+class QuotesSpider(scrapy.Spider):
+    name = "quotes"
+    start_urls = [
+        'http://quotes.toscrape.com/page/1/',
+    ]
 
-        def parse(self, response):
-            for quote in response.css('div.quote'):
-                yield {
-                    'text': quote.css('span.text::text').extract_first(),
-                    'author': quote.css('span small::text').extract_first(),
-                    'tags': quote.css('div.tags a.tag::text').extract(),
-                }
+    def parse(self, response):
+        for quote in response.css('div.quote'):
+            yield {
+                'text': quote.css('span.text::text').extract_first(),
+                'author': quote.css('span small::text').extract_first(),
+                'tags': quote.css('div.tags a.tag::text').extract(),
+            }
 
-            next_page = response.css('li.next a::attr(href)').extract_first()
-            if next_page is not None:
-                yield response.follow(next_page, callback=self.parse)
+        next_page = response.css('li.next a::attr(href)').extract_first()
+        if next_page is not None:
+            yield response.follow(next_page, callback=self.parse)
 ```
-与 ``scrapy.Request``不同， ``response.follow`` 支持相对url - 不需要再调用``urljoin``方法，值得注意的是 ``response.follow`` 只能返回Request实例。你依然必须要返回这个Request。
+与 ``scrapy.Request``不同， ``response.follow`` 支持相对url，所以不需要再调用``urljoin``方法，值得注意的是 ``response.follow`` 只能返回Request实例。你依然必须要返回这个Request。
 
 你也可以给 ``response.follow`` 传递一个选择器，这个选择器应该提取必要的属性:
 
@@ -503,7 +503,7 @@ class QuotesSpider(scrapy.Spider):
 
 注意：
 
-    ``response.follow(response.css('li.next a'))`` 是无效的，因为``response.css`` 返回一个包含全部结果的类似列表的选择器对象，并不是单独的一个选择器。使用``for``循环来解决才是正确的方法，或者 ``response.follow(response.css('li.next a')[0])`` 获取第一个选择器.
+    ``response.follow(response.css('li.next a'))`` 是无效的，因为``response.css`` 返回一个包含全部结果的类似列表的选择器对象，并不是单独的一个选择器。使用``for``循环来解决才是正确的方法，或者 ``response.follow(response.css('li.next a')[0])`` 获取第一个选择器。
 
 ## 更多的例子和模式
 
@@ -543,7 +543,7 @@ class QuotesSpider(scrapy.Spider):
 
 ``parse_author``回调定义了一个helper函数，用于从CSS查询中提取和清理数据，并以Python字典的形式返回作者的数据。
 
-另一件有趣的事情是，即使有许多来自同一作者的引用，我们也不需要多次访问同一个作者页面。默认情况下，Scrapy会过滤掉已经访问过的url的重复请求，避免因为编程错误而过多地攻击服务器。这可以通过设置:`DUPEFILTER_CLASS`来配置。
+另一件有趣的事情是，即使有许多来自同一作者的引用，我们也不需要多次访问同一个作者页面。默认情况下，Scrapy会过滤掉已经访问过的url的重复请求，避免因为编程错误而过多地攻击服务器。这可以通过设置项 `DUPEFILTER_CLASS` 来配置。
 
 如果你能够很好地理解如何追踪链接和Scrapy的回调机制将非常有帮助。
 
